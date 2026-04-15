@@ -18,6 +18,7 @@ import { Link } from 'wouter';
  */
 
 export default function Home() {
+
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
