@@ -43,39 +43,39 @@
 }
 
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
+  --primary: oklch(0.65 0.08 70);
+  --primary-foreground: oklch(0.98 0.001 0);
+  --sidebar-primary: oklch(0.65 0.08 70);
+  --sidebar-primary-foreground: oklch(0.98 0.001 0);
+  --chart-1: oklch(0.65 0.08 70);
+  --chart-2: oklch(0.60 0.07 70);
+  --chart-3: oklch(0.55 0.06 70);
+  --chart-4: oklch(0.50 0.05 70);
+  --chart-5: oklch(0.45 0.04 70);
+  --radius: 0.5rem;
+  --background: oklch(0.98 0.001 0);
   --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
+  --card: oklch(0.99 0.001 0);
   --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.98 0.001 0);
   --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
+  --secondary: oklch(0.95 0.002 0);
+  --secondary-foreground: oklch(0.235 0.015 65);
+  --muted: oklch(0.92 0.002 0);
+  --muted-foreground: oklch(0.552 0.016 65);
+  --accent: oklch(0.65 0.08 70);
+  --accent-foreground: oklch(0.98 0.001 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
+  --border: oklch(0.92 0.002 0);
+  --input: oklch(0.95 0.002 0);
+  --ring: oklch(0.65 0.08 70);
+  --sidebar: oklch(0.98 0.001 0);
   --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --sidebar-accent: oklch(0.65 0.08 70);
+  --sidebar-accent-foreground: oklch(0.98 0.001 0);
+  --sidebar-border: oklch(0.92 0.002 0);
+  --sidebar-ring: oklch(0.65 0.08 70);
 }
 
 .dark {
@@ -117,8 +117,34 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Georgia', serif;
+    @apply font-bold text-foreground;
+  }
+  h1 {
+    @apply text-5xl md:text-6xl leading-tight;
+  }
+  h2 {
+    @apply text-4xl md:text-5xl leading-tight;
+  }
+  h3 {
+    @apply text-2xl md:text-3xl leading-snug;
+  }
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  p {
+    @apply leading-relaxed;
+  }
+  a {
+    @apply transition-colors duration-200;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -173,5 +199,44 @@
       padding-right: 2rem;
       max-width: 1280px; /* Standard content width */
     }
+  }
+}
+
+/* Editorial Design Components */
+@layer components {
+  .accent-bar {
+    @apply h-1 bg-accent rounded-full;
+  }
+
+  .featured-label {
+    @apply text-xs font-semibold tracking-widest text-accent uppercase;
+  }
+
+  .article-card {
+    @apply bg-card text-card-foreground rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg;
+  }
+
+  .category-badge {
+    @apply inline-block px-3 py-1 text-xs font-semibold text-accent bg-accent/10 rounded-full;
+  }
+
+  .metadata {
+    @apply text-sm text-muted-foreground;
+  }
+
+  .font-display {
+    font-family: 'Georgia', serif;
+  }
+
+  .font-body {
+    font-family: 'Inter', sans-serif;
+  }
+
+  .transition-smooth {
+    @apply transition-all duration-300 ease-out;
+  }
+
+  .featured-section {
+    @apply bg-secondary rounded-lg overflow-hidden;
   }
 }
