@@ -11,6 +11,7 @@ import GuestAuthors from "@/pages/GuestAuthors";
 import Contribute from "@/pages/Contribute";
 import Categories from "@/pages/Categories";
 import Tag from "@/pages/Tag";
+import AuthorDashboard from "@/pages/AuthorDashboard";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -29,6 +30,7 @@ function Router() {
       <Route path={"/author/:id"} component={Author} />
       <Route path={"/guest-authors"} component={GuestAuthors} />
       <Route path={"/contribute"} component={Contribute} />
+      <Route path={"/author-dashboard"} component={AuthorDashboard} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -6,6 +6,7 @@ import NewsletterSignup from '@/components/NewsletterSignup';
 import Comments from '@/components/Comments';
 import Breadcrumb from '@/components/Breadcrumb';
 import RelatedArticles from '@/components/RelatedArticles';
+import SocialShare from '@/components/SocialShare';
 import { getArticleBySlug, getArticlesByCategory, getLatestArticles } from '@/lib/mockData';
 import { ArrowLeft, Share2, BookmarkPlus } from 'lucide-react';
 
@@ -100,10 +101,13 @@ export default function Article() {
               </div>
 
               {/* Share & Bookmark */}
-              <div className="ml-auto flex items-center gap-2">
-                <button className="p-2 hover:bg-secondary rounded-lg transition-colors" aria-label="Share article">
-                  <Share2 className="w-5 h-5 text-muted-foreground" />
-                </button>
+              <div className="ml-auto flex items-center gap-4">
+                <SocialShare
+                  title={article.title}
+                  url={`https://blog.useaima.com/article/${article.slug}`}
+                  description={article.excerpt}
+                  variant="horizontal"
+                />
                 <button className="p-2 hover:bg-secondary rounded-lg transition-colors" aria-label="Bookmark article">
                   <BookmarkPlus className="w-5 h-5 text-muted-foreground" />
                 </button>

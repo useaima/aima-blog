@@ -2,6 +2,7 @@ import { Link } from 'wouter';
 import { Search, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import SearchBox from './SearchBox';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -39,20 +40,27 @@ export default function Layout({ children }: LayoutProps) {
             <Link href="/authors">
               <a className="text-sm font-medium hover:text-accent transition-colors">Authors</a>
             </Link>
-            <Link href="/categories">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Categories</a>
+            <Link href="/guest-authors">
+              <a className="text-sm font-medium hover:text-accent transition-colors">Guest Authors</a>
+            </Link>
+            <Link href="/author-dashboard">
+              <a className="text-sm font-medium hover:text-accent transition-colors">Dashboard</a>
             </Link>
             <Link href="/archive">
               <a className="text-sm font-medium hover:text-accent transition-colors">Archive</a>
-            </Link>
-          </nav>
+            </Link>     </nav>
 
           {/* Right Actions */}
           <div className="flex items-center gap-4">
-            {/* Search */}
+            {/* Search Box */}
+            <div className="hidden md:block">
+              <SearchBox />
+            </div>
+
+            {/* Search Button (Mobile) */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
               aria-label="Search"
             >
               <Search className="w-5 h-5" />
