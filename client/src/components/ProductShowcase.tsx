@@ -1,4 +1,3 @@
-import { Link } from 'wouter';
 import { ArrowRight, Zap, Shield, TrendingUp } from 'lucide-react';
 
 /**
@@ -61,12 +60,13 @@ export default function ProductShowcase() {
             </div>
 
             {/* CTA */}
-            <Link href="https://eva.useaima.com">
-              <a className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors">
-                Open eva
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </Link>
+            <a
+              href="https://eva.useaima.com"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+            >
+              Open eva
+              <ArrowRight className="w-4 h-4" />
+            </a>
           </div>
 
           {/* Right: Product Screenshot */}
