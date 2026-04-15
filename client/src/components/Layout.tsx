@@ -191,8 +191,8 @@ export default function Layout({ children }: LayoutProps) {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
-                    RSS Feed
+                  <a href="/archive" className="text-muted-foreground hover:text-accent transition-colors">
+                    Archive
                   </a>
                 </li>
               </ul>
@@ -203,17 +203,17 @@ export default function Layout({ children }: LayoutProps) {
               <h3 className="font-semibold mb-4">Legal</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://useaima.com/privacy" className="text-muted-foreground hover:text-accent transition-colors">
                     Privacy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://useaima.com/terms" className="text-muted-foreground hover:text-accent transition-colors">
                     Terms
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://support.useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
                     Contact
                   </a>
                 </li>
@@ -225,13 +225,16 @@ export default function Layout({ children }: LayoutProps) {
           <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
             <p>&copy; 2026 aima. All rights reserved.</p>
             <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="hover:text-accent transition-colors">
-                Twitter
+              <a href="https://instagram.com/aima.ai123" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                Instagram
               </a>
-              <a href="#" className="hover:text-accent transition-colors">
-                LinkedIn
+              <a href="https://youtube.com/@aima" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                YouTube
               </a>
-              <a href="#" className="hover:text-accent transition-colors">
+              <a href="https://reddit.com/r/aima58" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+                Reddit
+              </a>
+              <a href="https://github.com/useaima" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
                 GitHub
               </a>
             </div>
