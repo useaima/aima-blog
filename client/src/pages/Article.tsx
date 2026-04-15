@@ -1,6 +1,8 @@
 import { useRoute, Link } from 'wouter';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
+import AuthorBio from '@/components/AuthorBio';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import { getArticleBySlug, getArticlesByCategory, getLatestArticles } from '@/lib/mockData';
 import { ArrowLeft, Share2, BookmarkPlus } from 'lucide-react';
 
@@ -203,12 +205,26 @@ export default function Article() {
         </section>
       )}
 
-      {/* Recent Articles Section */}
+      {/* Recent Artic      {/* Author Bio */}
+      <section className="container py-12 md:py-16 border-b border-border">
+        <div className="max-w-2xl mx-auto">
+          <AuthorBio author={article.author} />
+        </div>
+      </section>
+
+      {/* Newsletter Signup */}
+      <section className="container py-12 md:py-16 border-b border-border">
+        <div className="max-w-2xl mx-auto">
+          <NewsletterSignup variant="full-width" />
+        </div>
+      </section>
+
+      {/* Related Articles */}
       <section className="container py-12 md:py-16">
-        <h2 className="text-3xl font-bold text-foreground mb-12">Recent Articles</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {recentArticles.map((recentArticle) => (
-            <ArticleCard key={recentArticle.id} article={recentArticle} variant="featured" />
+        <h2 className="text-2xl font-bold text-foreground mb-8">Related Articles</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {relatedArticles.map((relatedArticle) => (
+            <ArticleCard key={relatedArticle.id} article={relatedArticle} />
           ))}
         </div>
       </section>

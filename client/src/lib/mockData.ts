@@ -5,7 +5,14 @@ export interface Author {
   bio: string;
   avatar?: string;
   twitter?: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
   articleCount: number;
+  isGuest?: boolean;
+  company?: string;
+  expertise?: string[];
+  joinedDate?: Date;
 }
 
 export interface Category {
@@ -39,7 +46,12 @@ export const authors: Author[] = [
     title: 'Founder, Product Engineer & Editorial Lead',
     bio: 'Alvins leads product direction at aima and writes about practical AI systems, autonomous finance, product clarity, and the operational ideas behind eva. His articles focus on making complex AI and finance topics easier to understand without losing their real-world depth.',
     twitter: '@techtrendedge',
+    linkedin: 'alvins-mukabane',
+    github: 'alvins-mukabane',
+    company: 'aima',
+    expertise: ['AI Systems', 'Finance', 'Product Design', 'Autonomous Commerce'],
     articleCount: 5,
+    isGuest: false,
   },
   {
     id: 'adams-aura',
@@ -47,7 +59,39 @@ export const authors: Author[] = [
     title: 'Research & Content Contributor',
     bio: 'Adams contributes research-driven explainers on AI agents, protocol infrastructure, financial trust, and the systems thinking behind autonomous commerce. His writing connects technical shifts like A2A, AP2, and KYA to practical product understanding inside the aima ecosystem.',
     twitter: '@adams.2wild',
+    linkedin: 'adams-aura',
+    company: 'aima',
+    expertise: ['AI Agents', 'Financial Systems', 'Protocol Design'],
     articleCount: 3,
+    isGuest: false,
+  },
+  {
+    id: 'sarah-chen',
+    name: 'Sarah Chen',
+    title: 'AI Ethics & Finance Researcher',
+    bio: 'Sarah is an independent researcher focused on ethical AI systems in financial services. She has published extensively on algorithmic transparency and consumer protection in automated financial systems.',
+    twitter: '@sarahchenai',
+    linkedin: 'sarah-chen-ai',
+    website: 'https://sarahchen.ai',
+    company: 'Independent Researcher',
+    expertise: ['AI Ethics', 'Financial Technology', 'Consumer Protection'],
+    articleCount: 2,
+    isGuest: true,
+    joinedDate: new Date('2026-03-15'),
+  },
+  {
+    id: 'james-rivera',
+    name: 'James Rivera',
+    title: 'Fintech Product Manager',
+    bio: 'James leads product strategy at a Series B fintech startup. He brings 8+ years of experience building consumer financial products and has a passion for making complex financial concepts accessible.',
+    twitter: '@jamesrivera_pm',
+    linkedin: 'james-rivera',
+    github: 'jrivera-fintech',
+    company: 'Fintech Startup',
+    expertise: ['Product Management', 'User Experience', 'Financial Services'],
+    articleCount: 1,
+    isGuest: true,
+    joinedDate: new Date('2026-04-01'),
   },
 ];
 
