@@ -57,9 +57,14 @@ export default function Layout({ children }: LayoutProps) {
             </button>
 
             {/* CTA Button */}
-            <Button className="hidden sm:inline-flex bg-accent text-accent-foreground hover:bg-accent/90">
+            <a
+              href="https://eva.useaima.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex px-4 py-2 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+            >
               Open eva
-            </Button>
+            </a>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -101,9 +106,14 @@ export default function Layout({ children }: LayoutProps) {
               <Link href="/archive">
                 <a className="text-sm font-medium hover:text-accent transition-colors">Archive</a>
               </Link>
-              <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              <a
+                href="https://eva.useaima.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full block px-4 py-2 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors text-center"
+              >
                 Open eva
-              </Button>
+              </a>
             </div>
           </nav>
         )}
@@ -156,17 +166,17 @@ export default function Layout({ children }: LayoutProps) {
               <h3 className="font-semibold mb-4">Resources</h3>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
                     Main site
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
                     About aima
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
+                  <a href="https://support.useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
                     Support
                   </a>
                 </li>

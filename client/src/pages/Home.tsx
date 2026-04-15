@@ -107,9 +107,14 @@ export default function Home() {
               <p className="text-sm text-muted-foreground mb-4">
                 Readers trust a blog more when the product is visible, the authors are real, and the next step is clear.
               </p>
-              <button className="px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors">
+              <a
+                href="https://eva.useaima.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+              >
                 Open eva →
-              </button>
+              </a>
             </div>
           </div>
 

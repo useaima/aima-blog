@@ -72,11 +72,21 @@ export default function FeaturedSlider({ articles }: FeaturedSliderProps) {
           </div>
 
           {/* CTA */}
-          <Link href={`/article/${currentArticle.slug}`}>
-            <a className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors">
-              Read lead story →
+          <div className="flex gap-3">
+            <Link href={`/article/${currentArticle.slug}`}>
+              <a className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors">
+                Read lead story →
+              </a>
+            </Link>
+            <a
+              href="https://eva.useaima.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 text-white rounded-lg font-semibold hover:bg-white/30 transition-colors"
+            >
+              Open eva
             </a>
-          </Link>
+          </div>
         </div>
       </div>
 

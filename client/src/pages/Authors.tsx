@@ -92,7 +92,7 @@ export default function Authors() {
             We're always looking for thoughtful contributors to the aima editorial desk. If you have insights on AI agents, personal finance, or autonomous systems, we'd love to hear from you.
           </p>
           <a
-            href="mailto:editorial@aima.com"
+            href="mailto:help@useaima.com"
             className="inline-block px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
           >
             Get in Touch →
