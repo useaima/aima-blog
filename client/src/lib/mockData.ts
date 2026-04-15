@@ -13,6 +13,8 @@ export interface Author {
   company?: string;
   expertise?: string[];
   joinedDate?: Date;
+  verified?: boolean;
+  verificationBadge?: 'expert' | 'researcher' | 'industry-leader' | 'thought-leader';
 }
 
 export interface Category {
@@ -52,6 +54,8 @@ export const authors: Author[] = [
     expertise: ['AI Systems', 'Finance', 'Product Design', 'Autonomous Commerce'],
     articleCount: 5,
     isGuest: false,
+    verified: true,
+    verificationBadge: 'industry-leader',
   },
   {
     id: 'adams-aura',
@@ -64,6 +68,8 @@ export const authors: Author[] = [
     expertise: ['AI Agents', 'Financial Systems', 'Protocol Design'],
     articleCount: 3,
     isGuest: false,
+    verified: true,
+    verificationBadge: 'thought-leader',
   },
   {
     id: 'sarah-chen',
@@ -78,6 +84,8 @@ export const authors: Author[] = [
     articleCount: 2,
     isGuest: true,
     joinedDate: new Date('2026-03-15'),
+    verified: true,
+    verificationBadge: 'researcher',
   },
   {
     id: 'james-rivera',
@@ -92,6 +100,8 @@ export const authors: Author[] = [
     articleCount: 1,
     isGuest: true,
     joinedDate: new Date('2026-04-01'),
+    verified: true,
+    verificationBadge: 'expert',
   },
 ];
 

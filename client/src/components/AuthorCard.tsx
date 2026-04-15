@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Author } from '@/lib/mockData';
 import { Twitter, Linkedin, Github, Globe, Badge } from 'lucide-react';
+import VerificationBadge from './VerificationBadge';
 
 interface AuthorCardProps {
   author: Author;
@@ -94,6 +95,13 @@ export default function AuthorCard({ author, variant = 'full' }: AuthorCardProps
           {/* Bio */}
           <p className="text-sm text-muted-foreground mb-4 line-clamp-3">{author.bio}</p>
 
+          {/* Verification Badge */}
+          {author.verified && author.verificationBadge && (
+            <div className="mb-4">
+              <VerificationBadge type={author.verificationBadge} size="sm" />
+            </div>
+          )}
+
           {/* Expertise Tags */}
           {author.expertise && author.expertise.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
@@ -159,6 +167,13 @@ export default function AuthorCard({ author, variant = 'full' }: AuthorCardProps
         {author.company && (
           <p className="text-xs text-muted-foreground mb-2">{author.company}</p>
         )}
+        {/* Verification Badge */}
+        {author.verified && author.verificationBadge && (
+          <div className="mb-4">
+            <VerificationBadge type={author.verificationBadge} size="md" />
+          </div>
+        )}
+
         {author.expertise && author.expertise.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {author.expertise?.map((skill) => (

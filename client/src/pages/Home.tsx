@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import FeaturedSlider from '@/components/FeaturedSlider';
 import ArticleCard from '@/components/ArticleCard';
 import CategoryGrid from '@/components/CategoryGrid';
+import ProductShowcase from '@/components/ProductShowcase';
 import { articles, categories, getFeaturedArticles, getLatestArticles } from '@/lib/mockData';
 import { Link } from 'wouter';
 
@@ -78,7 +79,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Category Grid Section */}
+      {/* Product Showcase */}
+      <ProductShowcase />
+
+      {/* Category Grid */}
       <section className="bg-secondary border-y border-border">
         <div className="container py-12 md:py-16">
           <h2 className="text-3xl font-bold text-foreground mb-12">Explore by Category</h2>

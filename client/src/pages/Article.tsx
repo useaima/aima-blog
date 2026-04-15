@@ -3,6 +3,7 @@ import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import AuthorBio from '@/components/AuthorBio';
 import NewsletterSignup from '@/components/NewsletterSignup';
+import Comments from '@/components/Comments';
 import { getArticleBySlug, getArticlesByCategory, getLatestArticles } from '@/lib/mockData';
 import { ArrowLeft, Share2, BookmarkPlus } from 'lucide-react';
 
@@ -205,7 +206,12 @@ export default function Article() {
         </section>
       )}
 
-      {/* Recent Artic      {/* Author Bio */}
+      {/* Recent Artic      {/* Comments Section */}
+      <section className="container py-12 md:py-16 border-b border-border">
+        <Comments articleId={article.id} />
+      </section>
+
+      {/* Author Bio */}
       <section className="container py-12 md:py-16 border-b border-border">
         <div className="max-w-2xl mx-auto">
           <AuthorBio author={article.author} />

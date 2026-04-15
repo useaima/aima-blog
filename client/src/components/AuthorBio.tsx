@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Author } from '@/lib/mockData';
 import { Twitter, Linkedin, Github, Globe, Badge } from 'lucide-react';
+import VerificationBadge from './VerificationBadge';
 
 interface AuthorBioProps {
   author: Author;
@@ -62,6 +63,11 @@ export default function AuthorBio({ author }: AuthorBioProps) {
           </Link>
           <p className="text-sm text-accent font-semibold">{author.title}</p>
           {author.company && <p className="text-xs text-muted-foreground">{author.company}</p>}
+        {author.verified && author.verificationBadge && (
+          <div className="mt-2">
+            <VerificationBadge type={author.verificationBadge} size="sm" />
+          </div>
+        )}
         </div>
         {author.isGuest && (
           <Badge className="bg-accent/10 text-accent border-0 flex-shrink-0">Guest</Badge>
