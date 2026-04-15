@@ -4,6 +4,8 @@ import ArticleCard from '@/components/ArticleCard';
 import AuthorBio from '@/components/AuthorBio';
 import NewsletterSignup from '@/components/NewsletterSignup';
 import Comments from '@/components/Comments';
+import Breadcrumb from '@/components/Breadcrumb';
+import RelatedArticles from '@/components/RelatedArticles';
 import { getArticleBySlug, getArticlesByCategory, getLatestArticles } from '@/lib/mockData';
 import { ArrowLeft, Share2, BookmarkPlus } from 'lucide-react';
 
@@ -43,15 +45,15 @@ export default function Article() {
 
   return (
     <Layout>
-      {/* Back Button */}
+      {/* Breadcrumb Navigation */}
       <div className="border-b border-border bg-secondary">
-        <div className="container py-4">
-          <Link href="/">
-            <a className="inline-flex items-center gap-2 text-accent hover:underline font-semibold">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Articles
-            </a>
-          </Link>
+        <div className="container">
+          <Breadcrumb
+            items={[
+              { label: article.category.name, href: `/category/${article.category.slug}` },
+              { label: article.title },
+            ]}
+          />
         </div>
       </div>
 
@@ -226,14 +228,7 @@ export default function Article() {
       </section>
 
       {/* Related Articles */}
-      <section className="container py-12 md:py-16">
-        <h2 className="text-2xl font-bold text-foreground mb-8">Related Articles</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {relatedArticles.map((relatedArticle) => (
-            <ArticleCard key={relatedArticle.id} article={relatedArticle} />
-          ))}
-        </div>
-      </section>
+      <RelatedArticles articles={relatedArticles} title="Related Articles" variant="grid" />
     </Layout>
   );
 }

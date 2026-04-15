@@ -19,9 +19,11 @@ export default function Layout({ children }: LayoutProps) {
           {/* Logo */}
           <Link href="/">
             <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 bg-accent rounded-full flex items-center justify-center">
-                <span className="text-accent-foreground font-bold text-sm">A</span>
-              </div>
+              <img
+                src="/logo.png"
+                alt="Aima Logo"
+                className="w-8 h-8 object-contain"
+              />
               <div className="hidden sm:block">
                 <div className="text-sm font-semibold text-muted-foreground tracking-widest">AIMA</div>
                 <div className="text-xs text-muted-foreground">EDITORIAL HUB FOR EVA</div>

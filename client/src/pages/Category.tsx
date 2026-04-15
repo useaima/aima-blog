@@ -1,6 +1,7 @@
 import { useRoute, Link } from 'wouter';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
+import Breadcrumb from '@/components/Breadcrumb';
 import { categories, getArticlesByCategory } from '@/lib/mockData';
 import { ArrowLeft } from 'lucide-react';
 
@@ -35,15 +36,15 @@ export default function Category() {
 
   return (
     <Layout>
-      {/* Back Button */}
+      {/* Breadcrumb Navigation */}
       <div className="border-b border-border bg-secondary">
-        <div className="container py-4">
-          <Link href="/">
-            <a className="inline-flex items-center gap-2 text-accent hover:underline font-semibold">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Articles
-            </a>
-          </Link>
+        <div className="container">
+          <Breadcrumb
+            items={[
+              { label: 'Categories', href: '/categories' },
+              { label: category.name },
+            ]}
+          />
         </div>
       </div>
 
