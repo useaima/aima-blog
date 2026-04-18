@@ -3,12 +3,6 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "dist",
   "public": true,
-  "functions": {
-    "index.js": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
-  },
   "routes": [
     {
       "src": "/api/(.*)",
@@ -27,6 +21,9 @@
       "dest": "/public/index.html"
     }
   ],
+  "env": {
+    "NODE_ENV": "production"
+  },
   "headers": [
     {
       "source": "/api/(.*)",
