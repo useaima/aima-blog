@@ -1,15 +1,8 @@
 import { useRoute, Link } from 'wouter';
+import { ArrowLeft, Instagram, Facebook } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import { authors, getArticlesByAuthor } from '@/lib/mockData';
-import { ArrowLeft, Twitter } from 'lucide-react';
-
-/**
- * Author Page Design Notes:
- * - Author profile header with bio
- * - Articles written by the author
- * - Social links and contact info
- */
 
 export default function Author() {
   const [, params] = useRoute('/author/:id');
@@ -35,7 +28,6 @@ export default function Author() {
 
   return (
     <Layout>
-      {/* Back Button */}
       <div className="border-b border-border bg-secondary">
         <div className="container py-4">
           <Link href="/">
@@ -47,39 +39,45 @@ export default function Author() {
         </div>
       </div>
 
-      {/* Author Header */}
       <section className="bg-secondary border-b border-border">
         <div className="container py-12 md:py-16">
           <div className="flex flex-col md:flex-row items-start gap-8 mb-8">
-            {/* Avatar */}
             <div className="w-24 h-24 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0">
               <span className="text-5xl font-bold text-accent">{author.name.charAt(0)}</span>
             </div>
 
-            {/* Info */}
             <div className="flex-1">
               <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2">{author.name}</h1>
               <p className="text-lg text-accent font-semibold mb-4">{author.title}</p>
               <p className="text-muted-foreground mb-6 max-w-2xl">{author.bio}</p>
 
-              {/* Social Links */}
-              <div className="flex items-center gap-4">
-                {author.twitter && (
+              <div className="flex items-center gap-4 flex-wrap">
+                {author.instagram && (
                   <a
-                    href={`https://twitter.com/${author.twitter.replace('@', '')}`}
+                    href={`https://instagram.com/${author.instagram}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-accent hover:underline font-semibold"
                   >
-                    <Twitter className="w-4 h-4" />
-                    {author.twitter}
+                    <Instagram className="w-4 h-4" />
+                    @{author.instagram}
+                  </a>
+                )}
+                {author.facebook && (
+                  <a
+                    href={`https://facebook.com/${encodeURIComponent(author.facebook)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-accent hover:underline font-semibold"
+                  >
+                    <Facebook className="w-4 h-4" />
+                    {author.facebook}
                   </a>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Stats */}
           <div className="flex gap-8 pt-8 border-t border-border">
             <div>
               <p className="text-2xl font-bold text-foreground">{author.articleCount}</p>
@@ -93,11 +91,8 @@ export default function Author() {
         </div>
       </section>
 
-      {/* Articles Section */}
       <section className="container py-12 md:py-16">
-        <h2 className="text-3xl font-bold text-foreground mb-12">
-          {author.name}'s Articles
-        </h2>
+        <h2 className="text-3xl font-bold text-foreground mb-12">{author.name}'s Articles</h2>
 
         {authorArticles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -109,15 +104,12 @@ export default function Author() {
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4">No articles published yet.</p>
             <Link href="/">
-              <a className="text-accent font-semibold hover:underline">
-                Browse all articles →
-              </a>
+              <a className="text-accent font-semibold hover:underline">Browse all articles →</a>
             </Link>
           </div>
         )}
       </section>
 
-      {/* Other Authors Section */}
       <section className="bg-secondary border-y border-border">
         <div className="container py-12 md:py-16">
           <h2 className="text-3xl font-bold text-foreground mb-12">Other Authors</h2>
@@ -135,9 +127,7 @@ export default function Author() {
                     </h3>
                     <p className="text-sm text-accent font-semibold mb-3">{otherAuthor.title}</p>
                     <p className="text-sm text-muted-foreground mb-4 line-clamp-2">{otherAuthor.bio}</p>
-                    <div className="text-xs text-muted-foreground">
-                      {otherAuthor.articleCount} published articles
-                    </div>
+                    <div className="text-xs text-muted-foreground">{otherAuthor.articleCount} published articles</div>
                   </a>
                 </Link>
               ))}
