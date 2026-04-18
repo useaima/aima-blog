@@ -21,6 +21,11 @@ import {
   getCategoryBySlug,
   getTags,
   getTagBySlug,
+  getUserBookmarks,
+  getBookmark,
+  createBookmark,
+  deleteBookmark,
+  getBookmarkCount,
 } from "../db";
 
 export const blogRouter = router({
@@ -168,6 +173,31 @@ export const blogRouter = router({
     bySlug: publicProcedure
       .input(z.object({ slug: z.string() }))
       .query(async ({ input }) => getTagBySlug(input.slug)),
+  }),
+
+  // ============ BOOKMARK PROCEDURES ============
+  bookmarks: router({
+    list: protectedProcedure.query(async ({ ctx }) => getUserBookmarks(ctx.user.id)),
+
+    check: protectedProcedure
+      .input(z.object({ articleId: z.number() }))
+      .query(async ({ ctx, input }) => getBookmark(ctx.user.id, input.articleId)),
+
+    add: protectedProcedure
+      .input(z.object({ articleId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await createBookmark(ctx.user.id, input.articleId);
+        return { success: true, message: "Article bookmarked" };
+      }),
+
+    remove: protectedProcedure
+      .input(z.object({ articleId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await deleteBookmark(ctx.user.id, input.articleId);
+        return { success: true, message: "Bookmark removed" };
+      }),
+
+    count: protectedProcedure.query(async ({ ctx }) => getBookmarkCount(ctx.user.id)),
   }),
 });
 

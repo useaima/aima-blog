@@ -1,6 +1,6 @@
 import { and, eq, desc, like, isNull, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, articles, authors, comments, subscribers, categories, tags, articleTags, InsertArticle, InsertAuthor, InsertComment, InsertSubscriber, Article, Author, Comment, Subscriber, Category, Tag } from "../drizzle/schema";
+import { InsertUser, users, articles, authors, comments, subscribers, categories, tags, articleTags, bookmarks, InsertArticle, InsertAuthor, InsertComment, InsertSubscriber, Article, Author, Comment, Subscriber, Category, Tag, Bookmark, InsertBookmark } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -259,4 +259,70 @@ export async function getTagBySlug(slug: string) {
 
   const result = await db.select().from(tags).where(eq(tags.slug, slug)).limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+
+// Bookmark functions
+export async function getUserBookmarks(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      bookmark: bookmarks,
+      article: articles,
+    })
+    .from(bookmarks)
+    .innerJoin(articles, eq(bookmarks.articleId, articles.id))
+    .where(eq(bookmarks.userId, userId))
+    .orderBy(desc(bookmarks.createdAt));
+}
+
+export async function getBookmark(userId: number, articleId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(bookmarks)
+    .where(and(eq(bookmarks.userId, userId), eq(bookmarks.articleId, articleId)))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createBookmark(userId: number, articleId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await getBookmark(userId, articleId);
+  if (existing) return existing;
+
+  const result = await db.insert(bookmarks).values({
+    userId,
+    articleId,
+  });
+
+  return result;
+}
+
+export async function deleteBookmark(userId: number, articleId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  return db
+    .delete(bookmarks)
+    .where(and(eq(bookmarks.userId, userId), eq(bookmarks.articleId, articleId)));
+}
+
+export async function getBookmarkCount(userId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const result = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(bookmarks)
+    .where(eq(bookmarks.userId, userId));
+
+  return result[0]?.count || 0;
 }

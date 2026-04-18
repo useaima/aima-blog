@@ -15,6 +15,13 @@
       "when": 1776292008101,
       "tag": "0001_far_korvac",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1776293924252,
+      "tag": "0002_panoramic_scalphunter",
+      "breakpoints": true
     }
   ]
 }
