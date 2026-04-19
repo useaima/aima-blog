@@ -1,4 +1,4 @@
-import { Share2, Twitter, Linkedin, Facebook, Mail, Copy } from 'lucide-react';
+import { Share2, Mail, Copy } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -30,25 +30,25 @@ export default function SocialShare({
   const socialLinks = [
     {
       name: 'Twitter',
-      icon: Twitter,
+      badge: 'X',
       url: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
       color: 'hover:text-blue-400',
     },
     {
       name: 'LinkedIn',
-      icon: Linkedin,
+      badge: 'in',
       url: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
       color: 'hover:text-blue-600',
     },
     {
       name: 'Facebook',
-      icon: Facebook,
+      badge: 'f',
       url: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
       color: 'hover:text-blue-500',
     },
     {
       name: 'Email',
-      icon: Mail,
+      icon: 'mail',
       url: `mailto:?subject=${encodedTitle}&body=${encodedDescription}%0A%0A${encodedUrl}`,
       color: 'hover:text-orange-500',
     },
@@ -85,24 +85,26 @@ export default function SocialShare({
       </div>
 
       <div className={variant === 'horizontal' ? 'flex gap-2' : 'flex flex-col gap-2'}>
-        {socialLinks.map((social) => {
-          const Icon = social.icon;
-          return (
-            <a
-              key={social.name}
-              href={social.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              title={`Share on ${social.name}`}
-              className={`${buttonClass} ${social.color} text-foreground transition-colors`}
-            >
-              <Icon className="w-4 h-4" />
-              {variant === 'vertical' && <span>{social.name}</span>}
-            </a>
-          );
-        })}
+        {socialLinks.map((social) => (
+          <a
+            key={social.name}
+            href={social.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`Share on ${social.name}`}
+            className={`${buttonClass} ${social.color} text-foreground transition-colors`}
+          >
+            {social.icon === 'mail' ? (
+              <Mail className="w-4 h-4" />
+            ) : (
+              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full border border-border px-2 text-[11px] font-bold uppercase">
+                {social.badge}
+              </span>
+            )}
+            {variant === 'vertical' && <span>{social.name}</span>}
+          </a>
+        ))}
 
-        {/* Copy Link Button */}
         <button
           onClick={handleCopyLink}
           title="Copy article link"

@@ -1,5 +1,4 @@
 import { Link } from 'wouter';
-import { Instagram, Facebook } from 'lucide-react';
 import { Author } from '@/lib/mockData';
 import VerificationBadge from './VerificationBadge';
 
@@ -14,17 +13,17 @@ function AuthorSocials({ author }: { author: Author }) {
       ? {
           key: 'instagram',
           href: `https://instagram.com/${author.instagram}`,
-          icon: <Instagram className="w-4 h-4" />,
+          label: 'IG',
         }
       : null,
     author.facebook
       ? {
           key: 'facebook',
           href: `https://facebook.com/${encodeURIComponent(author.facebook)}`,
-          icon: <Facebook className="w-4 h-4" />,
+          label: 'FB',
         }
       : null,
-  ].filter(Boolean) as Array<{ key: string; href: string; icon: JSX.Element }>;
+  ].filter(Boolean) as Array<{ key: string; href: string; label: string }>;
 
   if (!links.length) return null;
 
@@ -37,9 +36,9 @@ function AuthorSocials({ author }: { author: Author }) {
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}
-          className="text-muted-foreground hover:text-accent transition-colors"
+          className="inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-border bg-background px-2 text-[11px] font-bold text-muted-foreground transition-colors hover:border-accent hover:text-accent"
         >
-          {link.icon}
+          {link.label}
         </a>
       ))}
     </div>

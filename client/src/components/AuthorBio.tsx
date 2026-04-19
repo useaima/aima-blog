@@ -1,5 +1,4 @@
 import { Link } from 'wouter';
-import { Instagram, Facebook } from 'lucide-react';
 import { Author } from '@/lib/mockData';
 import VerificationBadge from './VerificationBadge';
 
@@ -14,7 +13,7 @@ export default function AuthorBio({ author }: AuthorBioProps) {
           key: 'instagram',
           label: 'Instagram',
           href: `https://instagram.com/${author.instagram}`,
-          icon: <Instagram className="w-4 h-4" />,
+          badge: 'IG',
         }
       : null,
     author.facebook
@@ -22,10 +21,10 @@ export default function AuthorBio({ author }: AuthorBioProps) {
           key: 'facebook',
           label: 'Facebook',
           href: `https://facebook.com/${encodeURIComponent(author.facebook)}`,
-          icon: <Facebook className="w-4 h-4" />,
+          badge: 'FB',
         }
       : null,
-  ].filter(Boolean) as Array<{ key: string; label: string; href: string; icon: JSX.Element }>;
+  ].filter(Boolean) as Array<{ key: string; label: string; href: string; badge: string }>;
 
   return (
     <div className="bg-secondary rounded-lg p-6 md:p-8 border border-border">
@@ -77,7 +76,9 @@ export default function AuthorBio({ author }: AuthorBioProps) {
               className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
               title={link.label}
             >
-              {link.icon}
+              <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
+                {link.badge}
+              </span>
               {link.label}
             </a>
           ))}

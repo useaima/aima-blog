@@ -2,7 +2,6 @@ import { useRoute, Link } from 'wouter';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import { getArticlesByTag, getAllTags } from '@/lib/mockData';
-import { ArrowLeft } from 'lucide-react';
 
 /**
  * Tag Page Design Notes:
@@ -40,7 +39,7 @@ export default function Tag() {
         <div className="container py-4">
           <Link href="/">
             <a className="inline-flex items-center gap-2 text-accent hover:underline font-semibold">
-              <ArrowLeft className="w-4 h-4" />
+              <span aria-hidden="true" className="text-base leading-none">←</span>
               Back to Articles
             </a>
           </Link>

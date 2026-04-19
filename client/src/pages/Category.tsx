@@ -3,7 +3,6 @@ import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import Breadcrumb from '@/components/Breadcrumb';
 import { categories, getArticlesByCategory } from '@/lib/mockData';
-import { ArrowLeft } from 'lucide-react';
 
 /**
  * Category Page Design Notes:

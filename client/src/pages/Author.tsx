@@ -1,5 +1,4 @@
 import { useRoute, Link } from 'wouter';
-import { ArrowLeft, Instagram, Facebook } from 'lucide-react';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
 import { authors, getArticlesByAuthor } from '@/lib/mockData';
@@ -32,7 +31,7 @@ export default function Author() {
         <div className="container py-4">
           <Link href="/">
             <a className="inline-flex items-center gap-2 text-accent hover:underline font-semibold">
-              <ArrowLeft className="w-4 h-4" />
+              <span aria-hidden="true" className="text-base leading-none">←</span>
               Back to Articles
             </a>
           </Link>
@@ -59,7 +58,9 @@ export default function Author() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-accent hover:underline font-semibold"
                   >
-                    <Instagram className="w-4 h-4" />
+                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-xs font-bold text-accent">
+                      IG
+                    </span>
                     @{author.instagram}
                   </a>
                 )}
@@ -70,7 +71,9 @@ export default function Author() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-accent hover:underline font-semibold"
                   >
-                    <Facebook className="w-4 h-4" />
+                    <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-xs font-bold text-accent">
+                      FB
+                    </span>
                     {author.facebook}
                   </a>
                 )}

@@ -1,5 +1,4 @@
 import { Link } from 'wouter';
-import { Instagram, Facebook } from 'lucide-react';
 import Layout from '@/components/Layout';
 import { authors, getArticlesByAuthor } from '@/lib/mockData';
 
@@ -59,7 +58,9 @@ export default function Authors() {
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-2 text-sm hover:underline"
                       >
-                        <Instagram className="w-4 h-4" />
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
+                          IG
+                        </span>
                         Instagram
                       </a>
                     )}
@@ -71,7 +72,9 @@ export default function Authors() {
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-2 text-sm hover:underline"
                       >
-                        <Facebook className="w-4 h-4" />
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
+                          FB
+                        </span>
                         Facebook
                       </a>
                     )}

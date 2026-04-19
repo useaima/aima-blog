@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Link } from 'wouter';
-import { ArrowLeft, Mail, Users, TrendingUp, Send } from 'lucide-react';
+import { Mail, Users, TrendingUp, Send } from 'lucide-react';
 import { getListStats, getCampaigns, createCampaign } from '@/lib/mailchimp';
 
 /**
@@ -80,7 +80,7 @@ export default function Newsletter() {
       <div className="container py-8">
         <Link href="/">
           <a className="inline-flex items-center gap-2 text-accent hover:underline mb-8">
-            <ArrowLeft className="w-4 h-4" />
+            <span aria-hidden="true" className="text-base leading-none">←</span>
             Back to Blog
           </a>
         </Link>
