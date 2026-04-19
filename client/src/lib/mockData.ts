@@ -984,6 +984,10 @@ export function getArticlesByAuthor(authorId: string): Article[] {
   return articles.filter((article) => article.author.id === authorId);
 }
 
+export function getAllTags(): string[] {
+  return Array.from(new Set(articles.flatMap((article) => article.tags))).sort((a, b) => a.localeCompare(b));
+}
+
 export function getFeaturedArticles(): Article[] {
   return articles.filter((article) => article.featured);
 }
