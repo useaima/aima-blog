@@ -1,6 +1,14 @@
-import type { CookieOptions, Request } from "express";
+import type { Request } from "express";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+type SessionCookieOptions = {
+  domain?: string;
+  httpOnly: boolean;
+  path: string;
+  sameSite: "none" | "lax" | "strict";
+  secure: boolean;
+};
 
 function isIpAddress(host: string) {
   // Basic IPv4 check and IPv6 presence detection.
@@ -23,7 +31,7 @@ function isSecureRequest(req: Request) {
 
 export function getSessionCookieOptions(
   req: Request
-): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
+): SessionCookieOptions {
   // const hostname = req.hostname;
   // const shouldSetDomain =
   //   hostname &&
