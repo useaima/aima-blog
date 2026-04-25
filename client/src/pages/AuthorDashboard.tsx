@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { useAuth } from '@/_core/hooks/useAuth';
 import Layout from '@/components/Layout';
 import { Link } from 'wouter';
-import { Upload, Plus, Edit2, Trash2 } from 'lucide-react';
+import { Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 import { articles } from '@/lib/mockData';
 
 /**
@@ -20,6 +21,7 @@ interface DraftArticle {
 }
 
 export default function AuthorDashboard() {
+  const { user, loading } = useAuth({ redirectOnUnauthenticated: true });
   const [drafts, setDrafts] = useState<DraftArticle[]>([
     {
       id: '1',
@@ -71,6 +73,17 @@ export default function AuthorDashboard() {
   const publishedCount = drafts.filter((d) => d.status === 'published').length;
   const pendingCount = drafts.filter((d) => d.status === 'pending').length;
   const draftCount = drafts.filter((d) => d.status === 'draft').length;
+
+  if (loading || !user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading team workspace…</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Layout>
