@@ -57,12 +57,12 @@ export const appRouter = router({
 
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
-      ctx.res.clearCookie(SUPABASE_ACCESS_COOKIE_NAME, {
+      (ctx.res as any).clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      (ctx.res as any).clearCookie(SUPABASE_ACCESS_COOKIE_NAME, {
         ...cookieOptions,
         maxAge: -1,
       });
-      ctx.res.clearCookie(SUPABASE_REFRESH_COOKIE_NAME, {
+      (ctx.res as any).clearCookie(SUPABASE_REFRESH_COOKIE_NAME, {
         ...cookieOptions,
         maxAge: -1,
       });

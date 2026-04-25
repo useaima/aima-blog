@@ -8,7 +8,6 @@ import {
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
-import type { Request, Response } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
@@ -284,7 +283,7 @@ class SDKServer {
     } as GetUserInfoWithJwtResponse;
   }
 
-  private applySupabaseCookies(req: Request, res: Response, accessToken: string, refreshToken?: string | null) {
+  private applySupabaseCookies(req: any, res: any, accessToken: string, refreshToken?: string | null) {
     const cookieOptions = getSessionCookieOptions(req);
     res.cookie(SUPABASE_ACCESS_COOKIE_NAME, accessToken, {
       ...cookieOptions,
@@ -344,8 +343,8 @@ class SDKServer {
   }
 
   async exchangeSupabaseSession(
-    req: Request,
-    res: Response,
+    req: any,
+    res: any,
     accessToken: string,
     refreshToken?: string | null,
   ) {
@@ -362,7 +361,7 @@ class SDKServer {
     });
   }
 
-  private async authenticateSupabaseRequest(req: Request, res?: Response) {
+  private async authenticateSupabaseRequest(req: any, res?: any) {
     const cookies = this.parseCookies(req.get("cookie"));
     let accessToken = cookies.get(SUPABASE_ACCESS_COOKIE_NAME);
     const refreshToken = cookies.get(SUPABASE_REFRESH_COOKIE_NAME);
@@ -419,7 +418,7 @@ class SDKServer {
     }
   }
 
-  private async authenticateLegacyRequest(req: Request): Promise<AuthenticatedUser> {
+  private async authenticateLegacyRequest(req: any): Promise<AuthenticatedUser> {
     const cookies = this.parseCookies(req.get("cookie"));
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -461,7 +460,7 @@ class SDKServer {
     return user;
   }
 
-  async authenticateRequest(req: Request, res?: Response): Promise<AuthenticatedUser> {
+  async authenticateRequest(req: any, res?: any): Promise<AuthenticatedUser> {
     const supabaseUser = await this.authenticateSupabaseRequest(req, res);
     if (supabaseUser) {
       return supabaseUser;

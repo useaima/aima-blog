@@ -241,11 +241,15 @@ export default function Article() {
                   );
                 }
 
-                return (
-                  <p key={`${block.type}-${index}`} className="text-base md:text-lg leading-8 text-muted-foreground">
-                    {block.content}
-                  </p>
-                );
+                if (block.type === 'p') {
+                  return (
+                    <p key={`${block.type}-${index}`} className="text-base md:text-lg leading-8 text-muted-foreground">
+                      {block.content}
+                    </p>
+                  );
+                }
+
+                return null;
               })}
             </div>
 

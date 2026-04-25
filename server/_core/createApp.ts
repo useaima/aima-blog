@@ -27,7 +27,7 @@ function normalizeOrigin(origin?: string | null) {
   return origin?.trim().toLowerCase() ?? "";
 }
 
-function applyPublicCors(req: express.Request, res: express.Response) {
+function applyPublicCors(req: any, res: any) {
   const requestOrigin = req.get("origin");
   const normalizedOrigin = normalizeOrigin(requestOrigin);
 
@@ -56,7 +56,7 @@ export async function createApp(options: CreateAppOptions = {}) {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  app.use("/api/public", (req, res, next) => {
+  app.use("/api/public", (req: any, res: any, next: any) => {
     applyPublicCors(req, res);
     if (req.method === "OPTIONS") {
       res.status(204).end();
@@ -65,16 +65,16 @@ export async function createApp(options: CreateAppOptions = {}) {
     next();
   });
 
-  app.get("/api/health", (_req, res) => {
+  app.get("/api/health", (_req: any, res: any) => {
     res.status(200).json({ ok: true, runtime });
   });
 
-  app.get("/api/public/settings", async (_req, res) => {
+  app.get("/api/public/settings", async (_req: any, res: any) => {
     const settings = await getSiteSettings();
     res.status(200).json({ ok: true, settings });
   });
 
-  app.post("/api/public/subscribe", async (req, res) => {
+  app.post("/api/public/subscribe", async (req: any, res: any) => {
     const email = cleanString(req.body?.email, 160).toLowerCase();
     const firstName = cleanString(req.body?.firstName, 80);
     const lastName = cleanString(req.body?.lastName, 80);
@@ -110,7 +110,7 @@ export async function createApp(options: CreateAppOptions = {}) {
     }
   });
 
-  app.post("/api/public/support-request", async (req, res) => {
+  app.post("/api/public/support-request", async (req: any, res: any) => {
     const name = cleanString(req.body?.name, 120);
     const email = cleanString(req.body?.email, 160).toLowerCase();
     const topic = cleanString(req.body?.topic, 160);
