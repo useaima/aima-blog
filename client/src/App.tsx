@@ -14,15 +14,16 @@ import Tag from "@/pages/Tag";
 import AuthorDashboard from "@/pages/AuthorDashboard";
 import Newsletter from "@/pages/Newsletter";
 import AdminDashboard from "@/pages/AdminDashboard";
+import TeamLogin from "@/pages/TeamLogin";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/login"} component={TeamLogin} />
       <Route path={"/article/:slug"} component={Article} />
       <Route path={"/categories"} component={Categories} />
       <Route path={"/category/:slug"} component={Category} />
@@ -36,7 +37,6 @@ function Router() {
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/newsletter"} component={Newsletter} />
       <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
   );
@@ -45,9 +45,7 @@ function Router() {
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
           <Router />

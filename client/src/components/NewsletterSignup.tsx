@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
-import { subscribeToNewsletter } from '@/lib/mailchimp';
+import { trpc } from '@/lib/trpc';
 
 interface NewsletterSignupProps {
   variant?: 'default' | 'compact' | 'full-width';
@@ -21,6 +21,7 @@ export default function NewsletterSignup({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(true);
+  const subscribeMutation = trpc.crm.subscribers.subscribe.useMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +30,6 @@ export default function NewsletterSignup({
       return;
     }
 
-    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError('Please enter a valid email address');
@@ -40,11 +40,13 @@ export default function NewsletterSignup({
     setError(null);
 
     try {
-      const result = await subscribeToNewsletter({
+      const result = await subscribeMutation.mutateAsync({
         email,
         firstName: firstName || undefined,
-        source: 'blog',
+        source: 'aima-blog',
         tags: ['blog-subscriber'],
+        pageUrl: typeof window !== 'undefined' ? window.location.href : undefined,
+        origin: typeof window !== 'undefined' ? window.location.origin : undefined,
       });
 
       if (result.success) {
@@ -54,16 +56,15 @@ export default function NewsletterSignup({
         setFirstName('');
         onSuccess?.();
 
-        // Reset after 5 seconds
         setTimeout(() => {
           setSubscribed(false);
           setShowForm(true);
         }, 5000);
       } else {
-        setError(result.message);
+        setError(result.message || 'Unable to subscribe right now.');
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred. Please try again.');
       console.error('Newsletter subscription error:', err);
     } finally {
       setLoading(false);

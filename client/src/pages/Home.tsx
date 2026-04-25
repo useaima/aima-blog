@@ -1,43 +1,19 @@
-import { useState } from 'react';
 import Layout from '@/components/Layout';
 import FeaturedSlider from '@/components/FeaturedSlider';
 import ArticleCard from '@/components/ArticleCard';
 import CategoryGrid from '@/components/CategoryGrid';
 import ProductShowcase from '@/components/ProductShowcase';
+import NewsletterSignup from '@/components/NewsletterSignup';
 import { articles, categories, getFeaturedArticles, getLatestArticles } from '@/lib/mockData';
 import { Link } from 'wouter';
 
-/**
- * Homepage Design Notes:
- * - Modern editorial layout with asymmetric grid
- * - Featured slider takes hero position
- * - Top stories sidebar on right for quick access
- * - Category grid below featured section
- * - Latest articles grid at bottom
- * - Newsletter signup integrated throughout
- */
-
 export default function Home() {
-
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
   const featuredArticles = getFeaturedArticles();
   const topStories = getLatestArticles(5);
   const latestArticles = getLatestArticles(6);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 3000);
-    }
-  };
-
   return (
     <Layout>
-      {/* Hero Section */}
       <section className="bg-secondary border-b border-border">
         <div className="container py-12 md:py-16">
           <div className="max-w-3xl">
@@ -53,15 +29,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Slider with Top Stories Sidebar */}
       <section className="container py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Featured Slider - 2 columns */}
           <div className="lg:col-span-2">
             {featuredArticles.length > 0 && <FeaturedSlider articles={featuredArticles} />}
           </div>
 
-          {/* Top Stories Sidebar - 1 column */}
           <aside className="lg:col-span-1">
             <div className="sticky top-24">
               <h2 className="text-2xl font-bold text-foreground mb-6">Top Stories</h2>
@@ -80,10 +53,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Product Showcase */}
       <ProductShowcase />
 
-      {/* Category Grid */}
       <section className="bg-secondary border-y border-border">
         <div className="container py-12 md:py-16">
           <h2 className="text-3xl font-bold text-foreground mb-12">Explore by Category</h2>
@@ -91,10 +62,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why This Matters Section */}
       <section className="container py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          {/* Left: Content */}
           <div>
             <h2 className="text-3xl font-bold text-foreground mb-6">Why This Matters</h2>
             <div className="space-y-4 text-muted-foreground">
@@ -123,7 +92,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right: Visual */}
           <div className="bg-secondary rounded-lg p-8 border border-border">
             <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
               <div className="text-center">
@@ -135,7 +103,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Latest Articles Section */}
       <section className="container py-12 md:py-16">
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Latest Articles</h2>
@@ -157,46 +124,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
       <section className="bg-secondary border-y border-border">
         <div className="container py-12 md:py-16">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Subscribe for Daily Updates</h2>
-            <p className="text-muted-foreground mb-8">
-              Receive new articles, eva updates, and finance insights from the aima blog without having to check manually.
-            </p>
-
-            <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 mb-4">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="flex-1 px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors whitespace-nowrap"
-              >
-                Subscribe
-              </button>
-            </form>
-
-            {subscribed && (
-              <p className="text-sm text-accent font-semibold">
-                ✓ Thanks for subscribing! Check your email to confirm.
-              </p>
-            )}
-
-            <p className="text-xs text-muted-foreground">
-              By subscribing, readers opt in to blog updates and eva-related notifications from aima.
-            </p>
-          </div>
+          <NewsletterSignup variant="full-width" />
         </div>
       </section>
 
-      {/* Authors Section */}
       <section className="container py-12 md:py-16">
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-foreground mb-4">Meet the Authors</h2>

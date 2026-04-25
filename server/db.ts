@@ -101,6 +101,15 @@ export async function getArticles(limit?: number, offset?: number) {
   return query;
 }
 
+export async function getAllArticles(limit?: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  let query: any = db.select().from(articles).orderBy(desc(articles.createdAt));
+  if (limit) query = query.limit(limit);
+  return query;
+}
+
 export async function getArticleBySlug(slug: string) {
   const db = await getDb();
   if (!db) return undefined;
@@ -177,6 +186,17 @@ export async function getArticleComments(articleId: number) {
   return db.select().from(comments)
     .where(and(eq(comments.articleId, articleId), eq(comments.status, 'approved'), isNull(comments.parentCommentId)))
     .orderBy(desc(comments.createdAt));
+}
+
+export async function getCommentsForModeration(status?: 'pending' | 'approved' | 'rejected') {
+  const db = await getDb();
+  if (!db) return [];
+
+  let query: any = db.select().from(comments).orderBy(desc(comments.createdAt));
+  if (status) {
+    query = query.where(eq(comments.status, status));
+  }
+  return query;
 }
 
 export async function createComment(data: InsertComment) {

@@ -1,12 +1,25 @@
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import {
+  AXIOS_TIMEOUT_MS,
+  COOKIE_NAME,
+  ONE_YEAR_MS,
+  SUPABASE_ACCESS_COOKIE_NAME,
+  SUPABASE_REFRESH_COOKIE_NAME,
+} from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
-import type { Request } from "express";
+import type { Request, Response } from "express";
 import { SignJWT, jwtVerify } from "jose";
 import type { User } from "../../drizzle/schema";
 import * as db from "../db";
+import { getSessionCookieOptions } from "./cookies";
+import { type AuthenticatedUser } from "./context";
 import { ENV } from "./env";
+import {
+  getSupabaseUser,
+  refreshSupabaseSession,
+  sendSupabaseMagicLink,
+} from "./supabase";
 import type {
   ExchangeTokenRequest,
   ExchangeTokenResponse,
@@ -14,7 +27,7 @@ import type {
   GetUserInfoWithJwtRequest,
   GetUserInfoWithJwtResponse,
 } from "./types/manusTypes";
-// Utility function
+
 const isNonEmptyString = (value: unknown): value is string =>
   typeof value === "string" && value.length > 0;
 
@@ -28,19 +41,52 @@ const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
 const GET_USER_INFO_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfo`;
 const GET_USER_INFO_WITH_JWT_PATH = `/webdev.v1.WebDevAuthPublicService/GetUserInfoWithJwt`;
 
+function normalizeEmail(value?: string | null) {
+  return value?.trim().toLowerCase() ?? "";
+}
+
+function inferDisplayName(email?: string | null, metadata?: Record<string, unknown> | null) {
+  const candidate =
+    (typeof metadata?.full_name === "string" && metadata.full_name) ||
+    (typeof metadata?.name === "string" && metadata.name) ||
+    (typeof metadata?.user_name === "string" && metadata.user_name) ||
+    email?.split("@")[0];
+
+  return candidate?.trim() || "AIMA Team";
+}
+
+function includesEmail(list: string[], email?: string | null) {
+  const normalized = normalizeEmail(email);
+  return normalized ? list.includes(normalized) : false;
+}
+
+function resolveTeamRole(email?: string | null): AuthenticatedUser["teamRole"] {
+  if (includesEmail(ENV.supabaseAdminEmails, email)) return "admin";
+  if (includesEmail(ENV.supabaseEditorEmails, email)) return "editor";
+  if (includesEmail(ENV.supabaseSupportEmails, email)) return "support";
+  return undefined;
+}
+
+function isAllowedTeamEmail(email?: string | null) {
+  const normalized = normalizeEmail(email);
+  if (!normalized) return false;
+
+  if (!ENV.supabaseTeamAllowedEmails.length) {
+    return true;
+  }
+
+  return ENV.supabaseTeamAllowedEmails.includes(normalized);
+}
+
 class OAuthService {
   constructor(private client: ReturnType<typeof axios.create>) {
-    console.log("[OAuth] Initialized with baseURL:", ENV.oAuthServerUrl);
     if (!ENV.oAuthServerUrl) {
-      console.error(
-        "[OAuth] ERROR: OAUTH_SERVER_URL is not configured! Set OAUTH_SERVER_URL environment variable."
-      );
+      console.warn("[OAuth] OAUTH_SERVER_URL is not configured.");
     }
   }
 
   private decodeState(state: string): string {
-    const redirectUri = atob(state);
-    return redirectUri;
+    return atob(state);
   }
 
   async getTokenByCode(
@@ -113,11 +159,6 @@ class SDKServer {
     return first ? first.toLowerCase() : null;
   }
 
-  /**
-   * Exchange OAuth authorization code for access token
-   * @example
-   * const tokenResponse = await sdk.exchangeCodeForToken(code, state);
-   */
   async exchangeCodeForToken(
     code: string,
     state: string
@@ -125,11 +166,6 @@ class SDKServer {
     return this.oauthService.getTokenByCode(code, state);
   }
 
-  /**
-   * Get user information using access token
-   * @example
-   * const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
-   */
   async getUserInfo(accessToken: string): Promise<GetUserInfoResponse> {
     const data = await this.oauthService.getUserInfoByToken({
       accessToken,
@@ -155,15 +191,10 @@ class SDKServer {
   }
 
   private getSessionSecret() {
-    const secret = ENV.cookieSecret;
+    const secret = ENV.cookieSecret || "aima-dev-session-secret";
     return new TextEncoder().encode(secret);
   }
 
-  /**
-   * Create a session token for a Manus user openId
-   * @example
-   * const sessionToken = await sdk.createSessionToken(userInfo.openId);
-   */
   async createSessionToken(
     openId: string,
     options: { expiresInMs?: number; name?: string } = {}
@@ -201,7 +232,6 @@ class SDKServer {
     cookieValue: string | undefined | null
   ): Promise<{ openId: string; appId: string; name: string } | null> {
     if (!cookieValue) {
-      console.warn("[Auth] Missing session cookie");
       return null;
     }
 
@@ -217,7 +247,6 @@ class SDKServer {
         !isNonEmptyString(appId) ||
         !isNonEmptyString(name)
       ) {
-        console.warn("[Auth] Session payload missing required fields");
         return null;
       }
 
@@ -226,8 +255,7 @@ class SDKServer {
         appId,
         name,
       };
-    } catch (error) {
-      console.warn("[Auth] Session verification failed", String(error));
+    } catch (_error) {
       return null;
     }
   }
@@ -256,8 +284,142 @@ class SDKServer {
     } as GetUserInfoWithJwtResponse;
   }
 
-  async authenticateRequest(req: Request): Promise<User> {
-    // Regular authentication flow
+  private applySupabaseCookies(req: Request, res: Response, accessToken: string, refreshToken?: string | null) {
+    const cookieOptions = getSessionCookieOptions(req);
+    res.cookie(SUPABASE_ACCESS_COOKIE_NAME, accessToken, {
+      ...cookieOptions,
+      maxAge: ONE_YEAR_MS,
+    });
+
+    if (refreshToken) {
+      res.cookie(SUPABASE_REFRESH_COOKIE_NAME, refreshToken, {
+        ...cookieOptions,
+        maxAge: ONE_YEAR_MS,
+      });
+    }
+  }
+
+  private async syncSupabaseUser(params: {
+    id: string;
+    email?: string | null;
+    metadata?: Record<string, unknown> | null;
+  }): Promise<AuthenticatedUser> {
+    const openId = `supabase:${params.id}`;
+    const email = normalizeEmail(params.email);
+    const teamRole = resolveTeamRole(email);
+    const role: User["role"] = teamRole === "admin" ? "admin" : "user";
+
+    await db.upsertUser({
+      openId,
+      email: email || null,
+      name: inferDisplayName(params.email, params.metadata),
+      loginMethod: "supabase_magic_link",
+      role,
+      lastSignedIn: new Date(),
+    });
+
+    const user = await db.getUserByOpenId(openId);
+    if (!user) {
+      throw ForbiddenError("Failed to provision team user");
+    }
+
+    return {
+      ...user,
+      teamRole,
+    };
+  }
+
+  async requestSupabaseMagicLink(email: string, next?: string) {
+    const normalizedEmail = normalizeEmail(email);
+    if (!isAllowedTeamEmail(normalizedEmail)) {
+      throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
+    }
+
+    const redirectUrl = new URL("/login", ENV.siteUrl);
+    if (next) {
+      redirectUrl.searchParams.set("next", next);
+    }
+
+    return sendSupabaseMagicLink(normalizedEmail, redirectUrl.toString());
+  }
+
+  async exchangeSupabaseSession(
+    req: Request,
+    res: Response,
+    accessToken: string,
+    refreshToken?: string | null,
+  ) {
+    const user = await getSupabaseUser(accessToken);
+    if (!isAllowedTeamEmail(user.email)) {
+      throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
+    }
+
+    this.applySupabaseCookies(req, res, accessToken, refreshToken ?? null);
+    return this.syncSupabaseUser({
+      id: user.id,
+      email: user.email,
+      metadata: user.user_metadata,
+    });
+  }
+
+  private async authenticateSupabaseRequest(req: Request, res?: Response) {
+    const cookies = this.parseCookies(req.get("cookie"));
+    let accessToken = cookies.get(SUPABASE_ACCESS_COOKIE_NAME);
+    const refreshToken = cookies.get(SUPABASE_REFRESH_COOKIE_NAME);
+
+    if (!accessToken && !refreshToken) {
+      return null;
+    }
+
+    try {
+      if (!accessToken && refreshToken) {
+        const refreshed = await refreshSupabaseSession(refreshToken);
+        accessToken = refreshed.access_token;
+        if (res) {
+          this.applySupabaseCookies(req, res, refreshed.access_token, refreshed.refresh_token);
+        }
+      }
+
+      if (!accessToken) {
+        return null;
+      }
+
+      let user = await getSupabaseUser(accessToken);
+
+      if (!isAllowedTeamEmail(user.email) && refreshToken) {
+        const refreshed = await refreshSupabaseSession(refreshToken);
+        accessToken = refreshed.access_token;
+        user = refreshed.user ?? (await getSupabaseUser(accessToken));
+        if (res) {
+          this.applySupabaseCookies(req, res, refreshed.access_token, refreshed.refresh_token);
+        }
+      }
+
+      if (!isAllowedTeamEmail(user.email)) {
+        throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
+      }
+
+      return this.syncSupabaseUser({
+        id: user.id,
+        email: user.email,
+        metadata: user.user_metadata,
+      });
+    } catch (error) {
+      if (res) {
+        const cookieOptions = getSessionCookieOptions(req);
+        res.clearCookie(SUPABASE_ACCESS_COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+        res.clearCookie(SUPABASE_REFRESH_COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      }
+
+      if (error instanceof Error && /allowlisted/i.test(error.message)) {
+        throw error;
+      }
+
+      return null;
+    }
+  }
+
+  private async authenticateLegacyRequest(req: Request): Promise<AuthenticatedUser> {
     const cookies = this.parseCookies(req.get("cookie"));
     const sessionCookie = cookies.get(COOKIE_NAME);
     const session = await this.verifySession(sessionCookie);
@@ -270,7 +432,6 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
@@ -298,6 +459,15 @@ class SDKServer {
     });
 
     return user;
+  }
+
+  async authenticateRequest(req: Request, res?: Response): Promise<AuthenticatedUser> {
+    const supabaseUser = await this.authenticateSupabaseRequest(req, res);
+    if (supabaseUser) {
+      return supabaseUser;
+    }
+
+    return this.authenticateLegacyRequest(req);
   }
 }
 
