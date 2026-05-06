@@ -1,34 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'wouter';
 import { Search, X } from 'lucide-react';
-import { articles, authors } from '@/lib/mockData';
-
-/**
- * Real-time Search Component
- * Provides instant search results for articles and authors
- * Filters by title, content, author, and tags
- */
+import { searchArticles, useBlogIndex } from '@/lib/contentApi';
 
 export default function SearchBox() {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const { data: index } = useBlogIndex();
 
-  // Real-time search filtering
   const results = useMemo(() => {
-    if (!query.trim()) return [];
-
-    const lowerQuery = query.toLowerCase();
-    const searchResults = articles.filter(
-      (article) =>
-        article.title.toLowerCase().includes(lowerQuery) ||
-        article.excerpt.toLowerCase().includes(lowerQuery) ||
-        article.author.name.toLowerCase().includes(lowerQuery) ||
-        article.tags.some((tag) => tag.toLowerCase().includes(lowerQuery)) ||
-        article.category.name.toLowerCase().includes(lowerQuery)
-    );
-
-    return searchResults.slice(0, 8); // Limit to 8 results
-  }, [query]);
+    if (!index || !query.trim()) return [];
+    return searchArticles(index, query).slice(0, 8);
+  }, [index, query]);
 
   const handleClear = () => {
     setQuery('');
@@ -37,52 +20,51 @@ export default function SearchBox() {
 
   return (
     <div className="relative w-full max-w-md">
-      {/* Search Input */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
         <input
           type="text"
-          placeholder="Search articles, authors, topics..."
+          placeholder="Search articles, authors, protocols..."
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
+          onChange={(event) => {
+            setQuery(event.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full pl-10 pr-10 py-2 bg-secondary border border-border rounded-lg text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
+          className="w-full rounded-lg border border-border bg-secondary py-2 pl-10 pr-10 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent"
         />
         {query && (
           <button
             onClick={handleClear}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+            aria-label="Clear search"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
 
-      {/* Search Results Dropdown */}
       {isOpen && (query.trim() || results.length > 0) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-background border border-border rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-96 overflow-y-auto rounded-lg border border-border bg-background shadow-lg">
           {results.length > 0 ? (
             <div className="divide-y divide-border">
               {results.map((article) => (
                 <Link key={article.id} href={`/article/${article.slug}`}>
                   <a
                     onClick={() => handleClear()}
-                    className="block p-3 hover:bg-secondary transition-colors"
+                    className="block p-3 transition-colors hover:bg-secondary"
                   >
                     <div className="flex items-start gap-3">
                       <img
                         src={article.image}
                         alt={article.title}
-                        className="w-12 h-12 rounded object-cover flex-shrink-0"
+                        className="h-12 w-12 flex-shrink-0 rounded object-cover"
                       />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-semibold text-foreground text-sm line-clamp-2">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="line-clamp-2 text-sm font-semibold text-foreground">
                           {article.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {article.author.name} • {article.category.name}
                         </p>
                       </div>
@@ -94,17 +76,16 @@ export default function SearchBox() {
           ) : query.trim() ? (
             <div className="p-4 text-center text-muted-foreground">
               <p className="text-sm">No articles found for "{query}"</p>
-              <p className="text-xs mt-2">Try searching with different keywords</p>
+              <p className="mt-2 text-xs">Try a product name, protocol term, or author.</p>
             </div>
           ) : null}
 
-          {/* View All Results Link */}
           {results.length > 0 && (
-            <div className="p-3 border-t border-border bg-secondary">
+            <div className="border-t border-border bg-secondary p-3">
               <Link href={`/archive?search=${encodeURIComponent(query)}`}>
                 <a
                   onClick={() => handleClear()}
-                  className="text-sm text-accent font-semibold hover:underline"
+                  className="text-sm font-semibold text-accent hover:underline"
                 >
                   View all results →
                 </a>
@@ -114,13 +95,7 @@ export default function SearchBox() {
         </div>
       )}
 
-      {/* Overlay to close dropdown */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isOpen && <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />}
     </div>
   );
 }

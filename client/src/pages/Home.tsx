@@ -4,47 +4,54 @@ import ArticleCard from '@/components/ArticleCard';
 import CategoryGrid from '@/components/CategoryGrid';
 import ProductShowcase from '@/components/ProductShowcase';
 import NewsletterSignup from '@/components/NewsletterSignup';
-import { articles, categories, getFeaturedArticles, getLatestArticles } from '@/lib/mockData';
 import { Link } from 'wouter';
+import { useBlogIndex, usePlatformData } from '@/lib/contentApi';
 
 export default function Home() {
-  const featuredArticles = getFeaturedArticles();
-  const topStories = getLatestArticles(5);
-  const latestArticles = getLatestArticles(6);
+  const { data: index } = useBlogIndex();
+  const { data: platform } = usePlatformData();
+
+  const featuredArticles = platform?.featuredArticles?.length
+    ? platform.featuredArticles
+    : index?.articles.filter((article) => article.featured).slice(0, 3) ?? [];
+  const topStories = index?.articles.slice(0, 5) ?? [];
+  const latestArticles = index?.articles.slice(0, 6) ?? [];
+  const categories = index?.categories.slice(0, 4) ?? [];
+  const authors = index?.authors.slice(0, 2) ?? [];
 
   return (
     <Layout>
-      <section className="bg-secondary border-b border-border">
+      <section className="border-b border-border bg-secondary">
         <div className="container py-12 md:py-16">
-          <div className="max-w-3xl">
-            <div className="featured-label mb-4">Official Editorial Hub for Eva</div>
-            <h1 className="text-5xl md:text-6xl font-bold text-foreground mb-6 leading-tight">
-              The aima blog built like a product newsroom.
+          <div className="max-w-4xl">
+            <div className="featured-label mb-4">Official Editorial Hub for EVA + UTG</div>
+            <h1 className="mb-6 text-5xl font-bold leading-tight text-foreground md:text-6xl">
+              The aima newsroom for financial AI and agentic transaction infrastructure.
             </h1>
-            <p className="text-lg text-muted-foreground mb-8">
-              blog.useaima.com is the official aima publication for practical AI agents, personal finance systems, protocol guides, and product updates tied directly to eva.
+            <p className="mb-8 text-lg text-muted-foreground">
+              blog.useaima.com is the official aima publication for practical AI agents, personal finance systems, protocol guides, product updates, and the operating model behind eva and Universal Transaction Gateway.
             </p>
-            <div className="accent-bar w-24 mb-8" />
+            <div className="accent-bar mb-8 w-24" />
           </div>
         </div>
       </section>
 
       <section className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            {featuredArticles.length > 0 && <FeaturedSlider articles={featuredArticles} />}
+            {featuredArticles.length > 0 ? <FeaturedSlider articles={featuredArticles} /> : null}
           </div>
 
           <aside className="lg:col-span-1">
             <div className="sticky top-24">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Top Stories</h2>
+              <h2 className="mb-6 text-2xl font-bold text-foreground">Top Stories</h2>
               <div className="space-y-4">
                 {topStories.map((article) => (
                   <ArticleCard key={article.id} article={article} variant="compact" />
                 ))}
               </div>
               <Link href="/archive">
-                <a className="inline-block mt-6 text-accent font-semibold hover:underline">
+                <a className="mt-6 inline-block font-semibold text-accent hover:underline">
                   Search the archive →
                 </a>
               </Link>
@@ -55,61 +62,65 @@ export default function Home() {
 
       <ProductShowcase />
 
-      <section className="bg-secondary border-y border-border">
+      <section className="border-y border-border bg-secondary">
         <div className="container py-12 md:py-16">
-          <h2 className="text-3xl font-bold text-foreground mb-12">Explore by Category</h2>
-          <CategoryGrid categories={categories.slice(0, 4)} />
+          <h2 className="mb-12 text-3xl font-bold text-foreground">Explore by Category</h2>
+          <CategoryGrid categories={categories} />
         </div>
       </section>
 
       <section className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-2">
           <div>
-            <h2 className="text-3xl font-bold text-foreground mb-6">Why This Matters</h2>
+            <h2 className="mb-6 text-3xl font-bold text-foreground">Why this editorial hub matters</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                <strong className="text-foreground">Real product proof</strong> - Real screenshots show that eva is already live.
+                <strong className="text-foreground">Real product context</strong> — Articles connect directly to the live AIMA products instead of floating as disconnected thought pieces.
               </p>
               <p>
-                <strong className="text-foreground">Author pages make ownership visible</strong> - Every article is linked to a real author with their body of work.
+                <strong className="text-foreground">Clear authorship</strong> — Readers can see who wrote the article, what they focus on, and the body of work they own.
               </p>
               <p>
-                <strong className="text-foreground">Each article can lead directly into eva</strong> - When the reader is ready, they can take action immediately.
+                <strong className="text-foreground">A stronger next step</strong> — Every guide can lead into eva, UTG, or the support center depending on the reader’s intent.
               </p>
             </div>
-            <div className="mt-8">
-              <p className="text-sm text-muted-foreground mb-4">
-                Readers trust a blog more when the product is visible, the authors are real, and the next step is clear.
-              </p>
+            <div className="mt-8 flex flex-wrap gap-3">
               <a
-                href="https://eva.useaima.com"
+                href={platform?.settings?.evaUrl ?? 'https://eva.useaima.com'}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+                className="inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
               >
                 Open eva →
+              </a>
+              <a
+                href={platform?.settings?.utgUrl ?? 'https://utg.useaima.com'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+              >
+                Open UTG →
               </a>
             </div>
           </div>
 
-          <div className="bg-secondary rounded-lg p-8 border border-border">
-            <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
-              <div className="text-center">
-                <div className="text-4xl mb-2">📊</div>
-                <p>Real product screenshots</p>
-              </div>
-            </div>
+          <div className="rounded-lg border border-border bg-secondary p-8">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Editorial utility</p>
+            <h3 className="mb-4 text-2xl font-bold text-foreground">Readers should leave with clarity, not just inspiration.</h3>
+            <p className="text-muted-foreground">
+              This hub is built to explain how AIMA’s products behave in the real world: how eva helps people review money better, how UTG creates safer transaction rails for agents, and what those systems look like in practice.
+            </p>
           </div>
         </div>
       </section>
 
       <section className="container py-12 md:py-16">
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Latest Articles</h2>
+          <h2 className="mb-4 text-3xl font-bold text-foreground">Latest Articles</h2>
           <p className="text-muted-foreground">Current thinking from the aima editorial desk</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {latestArticles.map((article) => (
             <ArticleCard key={article.id} article={article} variant="featured" />
           ))}
@@ -117,14 +128,12 @@ export default function Home() {
 
         <div className="text-center">
           <Link href="/archive">
-            <a className="inline-block text-accent font-semibold hover:underline">
-              View all articles →
-            </a>
+            <a className="inline-block font-semibold text-accent hover:underline">View all articles →</a>
           </Link>
         </div>
       </section>
 
-      <section className="bg-secondary border-y border-border">
+      <section className="border-y border-border bg-secondary">
         <div className="container py-12 md:py-16">
           <NewsletterSignup variant="full-width" />
         </div>
@@ -132,27 +141,25 @@ export default function Home() {
 
       <section className="container py-12 md:py-16">
         <div className="mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Meet the Authors</h2>
+          <h2 className="mb-4 text-3xl font-bold text-foreground">Meet the Authors</h2>
           <p className="text-muted-foreground">
-            The people writing the guides behind eva. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
+            The people writing the guides behind eva and Universal Transaction Gateway. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {articles.map((article) => article.author).filter((author, index, self) => self.findIndex((a) => a.id === author.id) === index).slice(0, 2).map((author) => (
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+          {authors.map((author) => (
             <Link key={author.id} href={`/author/${author.id}`}>
-              <a className="group block p-8 rounded-lg bg-secondary border border-border hover:border-accent transition-colors">
-                <div className="w-12 h-12 rounded-full bg-accent/20 flex items-center justify-center mb-4">
+              <a className="group block rounded-lg border border-border bg-secondary p-8 transition-colors hover:border-accent">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-accent/20">
                   <span className="text-lg font-bold text-accent">{author.name.charAt(0)}</span>
                 </div>
-                <h3 className="text-xl font-bold text-foreground mb-2 group-hover:text-accent transition-colors">
+                <h3 className="mb-2 text-xl font-bold text-foreground transition-colors group-hover:text-accent">
                   {author.name}
                 </h3>
-                <p className="text-sm text-accent font-semibold mb-3">{author.title}</p>
-                <p className="text-sm text-muted-foreground mb-4">{author.bio}</p>
-                <div className="text-xs text-muted-foreground">
-                  {author.articleCount} published articles
-                </div>
+                <p className="mb-3 text-sm font-semibold text-accent">{author.title}</p>
+                <p className="mb-4 text-sm text-muted-foreground">{author.bio}</p>
+                <div className="text-xs text-muted-foreground">{author.articleCount} published articles</div>
               </a>
             </Link>
           ))}

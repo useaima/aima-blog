@@ -7,7 +7,7 @@ import {
   listNewsletterSubscribers,
   subscribeNewsletter,
   updateCrmContactStatus,
-} from "../sharedBackend";
+} from "../platformBackend";
 
 export const crmRouter = router({
   subscribers: router({

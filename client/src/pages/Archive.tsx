@@ -1,86 +1,73 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Layout from '@/components/Layout';
 import ArticleCard from '@/components/ArticleCard';
-import { articles, getLatestArticles } from '@/lib/mockData';
 import { Search } from 'lucide-react';
-
-/**
- * Archive Page Design Notes:
- * - Timeline view of articles grouped by month/year
- * - Search functionality to filter articles
- * - Vertical card layout for archive exploration
- */
+import { groupArticlesByMonth, useBlogIndex } from '@/lib/contentApi';
 
 export default function Archive() {
+  const { data: index } = useBlogIndex();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
-  // Group articles by month
-  const groupedArticles = useMemo(() => {
-    const groups: Record<string, typeof articles> = {};
-
-    articles.forEach((article) => {
-      const monthKey = article.publishedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-      if (!groups[monthKey]) {
-        groups[monthKey] = [];
-      }
-      groups[monthKey].push(article);
-    });
-
-    return groups;
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const initialSearch = params.get('search') ?? '';
+    if (initialSearch) {
+      setSearchQuery(initialSearch);
+    }
   }, []);
 
-  // Filter articles based on search query
+  const groupedArticles = useMemo(() => groupArticlesByMonth(index ?? { articles: [], authors: [], categories: [], tags: [] }), [index]);
+  const articles = index?.articles ?? [];
+
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
-      const matchesSearch =
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.author.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.category.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const haystack = [
+        article.title,
+        article.excerpt,
+        article.author.name,
+        article.category.name,
+        article.tags.join(' '),
+      ]
+        .join(' ')
+        .toLowerCase();
 
+      const matchesSearch = haystack.includes(searchQuery.toLowerCase());
       const monthKey = article.publishedAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
       const matchesMonth = !selectedMonth || monthKey === selectedMonth;
-
       return matchesSearch && matchesMonth;
     });
-  }, [searchQuery, selectedMonth]);
+  }, [articles, searchQuery, selectedMonth]);
 
-  const months = Object.keys(groupedArticles).sort((a, b) => {
-    return new Date(b).getTime() - new Date(a).getTime();
-  });
+  const months = Object.keys(groupedArticles).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
 
   return (
     <Layout>
-      {/* Header */}
-      <section className="bg-secondary border-b border-border">
+      <section className="border-b border-border bg-secondary">
         <div className="container py-12 md:py-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Article Archive</h1>
+          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Article Archive</h1>
           <p className="text-lg text-muted-foreground">
             Explore all articles from the aima editorial desk. Search by title, author, category, or browse by date.
           </p>
-          <div className="accent-bar w-24 mt-8" />
+          <div className="accent-bar mt-8 w-24" />
         </div>
       </section>
 
-      {/* Search and Filter */}
       <section className="container py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            {/* Search Bar */}
             <div className="relative mb-8">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <input
                 type="text"
                 placeholder="Search articles, authors, categories..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                className="w-full rounded-lg border border-border bg-background py-3 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-accent"
               />
             </div>
 
-            {/* Articles List */}
             {filteredArticles.length > 0 ? (
               <div className="space-y-6">
                 {filteredArticles.map((article) => (
@@ -88,14 +75,14 @@ export default function Archive() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground mb-4">No articles found matching your search.</p>
+              <div className="py-12 text-center">
+                <p className="mb-4 text-muted-foreground">No articles found matching your filters.</p>
                 <button
                   onClick={() => {
                     setSearchQuery('');
                     setSelectedMonth(null);
                   }}
-                  className="text-accent font-semibold hover:underline"
+                  className="font-semibold text-accent hover:underline"
                 >
                   Clear filters
                 </button>
@@ -103,17 +90,16 @@ export default function Archive() {
             )}
           </div>
 
-          {/* Sidebar - Filters */}
           <aside className="lg:col-span-1">
             <div className="sticky top-24">
-              <h3 className="text-lg font-bold text-foreground mb-6">Filter by Month</h3>
+              <h3 className="mb-6 text-lg font-bold text-foreground">Filter by Month</h3>
 
-              <div className="space-y-2 mb-8">
+              <div className="mb-8 space-y-2">
                 <button
                   onClick={() => setSelectedMonth(null)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                  className={`w-full rounded-lg px-4 py-3 text-left transition-colors ${
                     selectedMonth === null
-                      ? 'bg-accent text-accent-foreground font-semibold'
+                      ? 'bg-accent font-semibold text-accent-foreground'
                       : 'bg-secondary text-foreground hover:bg-secondary/80'
                   }`}
                 >
@@ -124,9 +110,9 @@ export default function Archive() {
                   <button
                     key={month}
                     onClick={() => setSelectedMonth(month)}
-                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                    className={`w-full rounded-lg px-4 py-3 text-left transition-colors ${
                       selectedMonth === month
-                        ? 'bg-accent text-accent-foreground font-semibold'
+                        ? 'bg-accent font-semibold text-accent-foreground'
                         : 'bg-secondary text-foreground hover:bg-secondary/80'
                     }`}
                   >
@@ -135,9 +121,8 @@ export default function Archive() {
                 ))}
               </div>
 
-              {/* Quick Stats */}
-              <div className="bg-secondary rounded-lg p-6 border border-border">
-                <h4 className="font-semibold text-foreground mb-4">Archive Stats</h4>
+              <div className="rounded-lg border border-border bg-secondary p-6">
+                <h4 className="mb-4 font-semibold text-foreground">Archive Stats</h4>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Total Articles</span>
@@ -150,7 +135,7 @@ export default function Archive() {
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Latest</span>
                     <span className="font-semibold text-foreground">
-                      {articles[0]?.publishedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      {articles[0]?.publishedAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) ?? '—'}
                     </span>
                   </div>
                 </div>

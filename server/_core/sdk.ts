@@ -9,8 +9,8 @@ import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
 import { SignJWT, jwtVerify } from "jose";
-import type { User } from "../../drizzle/schema";
 import * as db from "../db";
+import { resolveTeamRole, isAllowedTeamEmail, syncTeamProfile } from "../platformBackend";
 import { getSessionCookieOptions } from "./cookies";
 import { type AuthenticatedUser } from "./context";
 import { ENV } from "./env";
@@ -54,27 +54,12 @@ function inferDisplayName(email?: string | null, metadata?: Record<string, unkno
   return candidate?.trim() || "AIMA Team";
 }
 
-function includesEmail(list: string[], email?: string | null) {
-  const normalized = normalizeEmail(email);
-  return normalized ? list.includes(normalized) : false;
-}
+function inferAvatar(metadata?: Record<string, unknown> | null) {
+  const candidate =
+    (typeof metadata?.avatar_url === "string" && metadata.avatar_url) ||
+    (typeof metadata?.picture === "string" && metadata.picture);
 
-function resolveTeamRole(email?: string | null): AuthenticatedUser["teamRole"] {
-  if (includesEmail(ENV.supabaseAdminEmails, email)) return "admin";
-  if (includesEmail(ENV.supabaseEditorEmails, email)) return "editor";
-  if (includesEmail(ENV.supabaseSupportEmails, email)) return "support";
-  return undefined;
-}
-
-function isAllowedTeamEmail(email?: string | null) {
-  const normalized = normalizeEmail(email);
-  if (!normalized) return false;
-
-  if (!ENV.supabaseTeamAllowedEmails.length) {
-    return true;
-  }
-
-  return ENV.supabaseTeamAllowedEmails.includes(normalized);
+  return candidate?.trim() || null;
 }
 
 class OAuthService {
@@ -151,8 +136,9 @@ class SDKServer {
     if (
       set.has("REGISTERED_PLATFORM_MICROSOFT") ||
       set.has("REGISTERED_PLATFORM_AZURE")
-    )
+    ) {
       return "microsoft";
+    }
     if (set.has("REGISTERED_PLATFORM_GITHUB")) return "github";
     const first = Array.from(set)[0];
     return first ? first.toLowerCase() : null;
@@ -305,32 +291,34 @@ class SDKServer {
   }): Promise<AuthenticatedUser> {
     const openId = `supabase:${params.id}`;
     const email = normalizeEmail(params.email);
-    const teamRole = resolveTeamRole(email);
-    const role: User["role"] = teamRole === "admin" ? "admin" : "user";
+    const name = inferDisplayName(params.email, params.metadata);
+    const avatarUrl = inferAvatar(params.metadata);
 
-    await db.upsertUser({
-      openId,
-      email: email || null,
-      name: inferDisplayName(params.email, params.metadata),
-      loginMethod: "supabase_magic_link",
-      role,
-      lastSignedIn: new Date(),
+    const profile = await syncTeamProfile({
+      id: params.id,
+      email,
+      fullName: name,
+      avatarUrl,
     });
 
-    const user = await db.getUserByOpenId(openId);
-    if (!user) {
-      throw ForbiddenError("Failed to provision team user");
-    }
-
     return {
-      ...user,
-      teamRole,
+      id: params.id,
+      openId,
+      email: email || null,
+      name,
+      role: profile.role === "admin" ? "admin" : "user",
+      teamRole: profile.role,
+      avatarUrl: profile.avatar_url ?? avatarUrl,
+      loginMethod: "supabase_magic_link",
+      createdAt: profile.created_at ?? null,
+      updatedAt: profile.updated_at ?? null,
+      lastSignedIn: new Date(),
     };
   }
 
   async requestSupabaseMagicLink(email: string, next?: string) {
     const normalizedEmail = normalizeEmail(email);
-    if (!isAllowedTeamEmail(normalizedEmail)) {
+    if (!(await isAllowedTeamEmail(normalizedEmail))) {
       throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
     }
 
@@ -349,7 +337,7 @@ class SDKServer {
     refreshToken?: string | null,
   ) {
     const user = await getSupabaseUser(accessToken);
-    if (!isAllowedTeamEmail(user.email)) {
+    if (!(await isAllowedTeamEmail(user.email))) {
       throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
     }
 
@@ -385,7 +373,7 @@ class SDKServer {
 
       let user = await getSupabaseUser(accessToken);
 
-      if (!isAllowedTeamEmail(user.email) && refreshToken) {
+      if (!(await isAllowedTeamEmail(user.email)) && refreshToken) {
         const refreshed = await refreshSupabaseSession(refreshToken);
         accessToken = refreshed.access_token;
         user = refreshed.user ?? (await getSupabaseUser(accessToken));
@@ -394,7 +382,7 @@ class SDKServer {
         }
       }
 
-      if (!isAllowedTeamEmail(user.email)) {
+      if (!(await isAllowedTeamEmail(user.email))) {
         throw ForbiddenError("This email is not allowlisted for the AIMA team workspace.");
       }
 
@@ -457,7 +445,13 @@ class SDKServer {
       lastSignedIn: signedInAt,
     });
 
-    return user;
+    const legacyTeamRole = user.role === "admin" ? "admin" : await resolveTeamRole(user.email ?? null);
+
+    return {
+      ...user,
+      teamRole: legacyTeamRole,
+      avatarUrl: null,
+    };
   }
 
   async authenticateRequest(req: any, res?: any): Promise<AuthenticatedUser> {

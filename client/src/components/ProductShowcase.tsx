@@ -1,86 +1,107 @@
-import { ArrowRight, Zap, Shield, TrendingUp } from 'lucide-react';
+import { ArrowRight, ExternalLink, Shield, TrendingUp, Workflow } from 'lucide-react';
+import { usePlatformData } from '@/lib/contentApi';
 
-/**
- * Product Showcase Component
- * Displays eva product features and screenshots
- * CDN URL: https://d2xsxph8kpxj0f.cloudfront.net/310519663309378093/Y8MawcyLgQXgPKr39dS5yr/eva-product-screenshot_dd1e5cd7.webp
- */
-
-export default function ProductShowcase() {
-  const features = [
+const productHighlights: Record<'eva' | 'utg', Array<{ icon: typeof TrendingUp; title: string; description: string }>> = {
+  eva: [
     {
       icon: TrendingUp,
-      title: 'Spending Analysis',
-      description: 'Track and analyze your spending patterns in real-time with AI-powered insights.',
-    },
-    {
-      icon: Zap,
-      title: 'Real-Time Alerts',
-      description: 'Get instant notifications about unusual financial activity and anomalies.',
+      title: 'Financial clarity',
+      description: 'Turn spending activity into alerts, review queues, and next-step guidance.',
     },
     {
       icon: Shield,
-      title: 'Financial Security',
-      description: 'Detect risks and opportunities with advanced AI monitoring.',
+      title: 'Safer money reviews',
+      description: 'Spot anomalies, subscription drift, and repeated leaks before they get expensive.',
     },
-  ];
+  ],
+  utg: [
+    {
+      icon: Workflow,
+      title: 'Agentic transaction control',
+      description: 'Place a hard gateway between agent intent and live money movement.',
+    },
+    {
+      icon: Shield,
+      title: 'Human approval + idempotency',
+      description: 'Keep execution non-custodial, reviewable, and safe when retries or failures happen.',
+    },
+  ],
+};
+
+export default function ProductShowcase() {
+  const { data: platform } = usePlatformData();
+  const products = platform?.products ?? [];
 
   return (
-    <section className="bg-secondary border-y border-border">
+    <section className="border-y border-border bg-secondary">
       <div className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left: Content */}
-          <div>
-            <div className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-full text-xs font-semibold mb-4">
-              LIVE PRODUCT
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              eva: AI Finance Assistant
-            </h2>
-            <p className="text-lg text-muted-foreground mb-6">
-              Turn your financial activity into clearer decisions. eva helps you understand spending, detect anomalies, and make better money decisions with less manual effort.
-            </p>
+        <div className="mb-10 max-w-3xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-accent">Live products</p>
+          <h2 className="text-3xl font-bold text-foreground md:text-4xl">AIMA is now building across finance guidance and transaction infrastructure.</h2>
+          <p className="mt-4 text-lg text-muted-foreground">
+            eva helps people understand money activity. UTG helps AI agents interact with financial systems safely. The blog is where both product stories are explained in detail.
+          </p>
+        </div>
 
-            {/* Features */}
-            <div className="space-y-4 mb-8">
-              {features.map((feature) => {
-                const Icon = feature.icon;
-                return (
-                  <div key={feature.title} className="flex gap-3">
-                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-accent/10 flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-accent" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground">{feature.title}</h3>
-                      <p className="text-sm text-muted-foreground">{feature.description}</p>
-                    </div>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {products.map((product) => {
+            const highlights = productHighlights[product.slug as 'eva' | 'utg'] ?? [];
+            return (
+              <article key={product.slug} className="rounded-2xl border border-border bg-background p-8 shadow-sm">
+                <div className="mb-5 flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-accent">{product.categoryLabel}</p>
+                    <h3 className="mt-2 text-2xl font-bold text-foreground">{product.name}</h3>
                   </div>
-                );
-              })}
-            </div>
+                  <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
+                    {product.status}
+                  </span>
+                </div>
 
-            {/* CTA */}
-            <a
-              href="https://eva.useaima.com"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
-            >
-              Open eva
-              <ArrowRight className="w-4 h-4" />
-            </a>
-          </div>
+                <p className="text-base text-muted-foreground">{product.description}</p>
 
-          {/* Right: Product Screenshot */}
-          <div className="relative">
-            <div className="rounded-lg overflow-hidden shadow-lg border border-border">
-              <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663309378093/Y8MawcyLgQXgPKr39dS5yr/eva-product-screenshot_dd1e5cd7.webp"
-                alt="eva AI Finance Assistant - Product Screenshot"
-                className="w-full h-auto"
-              />
-            </div>
-            {/* Decorative accent */}
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-accent/10 rounded-full blur-2xl" />
-          </div>
+                <div className="mt-6 space-y-4">
+                  {highlights.map((highlight) => {
+                    const Icon = highlight.icon;
+                    return (
+                      <div key={highlight.title} className="flex gap-3">
+                        <div className="mt-1 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-accent/10 text-accent">
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-foreground">{highlight.title}</h4>
+                          <p className="text-sm text-muted-foreground">{highlight.description}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <a
+                    href={product.primaryUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-accent px-5 py-3 text-sm font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+                  >
+                    {product.primaryLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                  {product.secondaryUrl && product.secondaryLabel ? (
+                    <a
+                      href={product.secondaryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-3 text-sm font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+                    >
+                      {product.secondaryLabel}
+                      <ExternalLink className="h-4 w-4" />
+                    </a>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

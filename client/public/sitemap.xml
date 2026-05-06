@@ -1,102 +1,111 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Homepage -->
   <url>
-    <loc>https://blog.useaima.com</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/</loc>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-
-  <!-- Main Pages -->
   <url>
     <loc>https://blog.useaima.com/authors</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blog.useaima.com/categories</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://blog.useaima.com/archive</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://blog.useaima.com/guest-authors</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://blog.useaima.com/contribute</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-
-  <!-- Articles -->
   <url>
     <loc>https://blog.useaima.com/article/inside-eva-finance-workspace</loc>
-    <lastmod>2026-04-10</lastmod>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/article/personal-finance-guide-2026</loc>
-    <lastmod>2026-04-08</lastmod>
+    <loc>https://blog.useaima.com/article/personal-finance-beginner-guide-2026</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/article/ai-agents-guide</loc>
-    <lastmod>2026-04-05</lastmod>
+    <loc>https://blog.useaima.com/article/kya-know-your-agent-financial-security-2026</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
-
-  <!-- Categories -->
   <url>
-    <loc>https://blog.useaima.com/category/product-updates</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/article/a2a-ap2-kya-explained-ai-agents-financial-systems</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/category/financial-guides</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/article/ai-agents-complete-beginner-guide-autonomous-finance</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/category/ai-protocols</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/article/a2a-payments-future-autonomous-commerce-2026</loc>
+    <lastmod>2026-04-19</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.8</priority>
   </url>
-
-  <!-- Authors -->
   <url>
     <loc>https://blog.useaima.com/author/alvins-mukabane</loc>
-    <lastmod>2026-04-15</lastmod>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/author/sarah-chen</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/author/adams-aura</loc>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://blog.useaima.com/author/james-rivera</loc>
-    <lastmod>2026-04-15</lastmod>
+    <loc>https://blog.useaima.com/category/ai-agents</loc>
+    <lastmod>2026-04-26</lastmod>
     <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://blog.useaima.com/category/personal-finance</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://blog.useaima.com/category/protocols</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://blog.useaima.com/category/product-updates</loc>
+    <lastmod>2026-04-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

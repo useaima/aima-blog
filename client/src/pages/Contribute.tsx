@@ -1,333 +1,189 @@
-import { useState } from 'react';
-import Layout from '@/components/Layout';
-import { Link } from 'wouter';
-import { CheckCircle } from 'lucide-react';
-
-/**
- * Contribute Page Design Notes:
- * - Guest author application form
- * - Guidelines for submissions
- * - FAQ about the program
- */
+import { useState } from "react";
+import Layout from "@/components/Layout";
+import { trpc } from "@/lib/trpc";
+import { CheckCircle, Sparkles } from "lucide-react";
 
 export default function Contribute() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    company: '',
-    title: '',
-    bio: '',
-    expertise: '',
-    twitter: '',
-    linkedin: '',
-    website: '',
-    articleIdea: '',
+    name: "",
+    email: "",
+    company: "",
+    title: "",
+    bio: "",
+    expertise: "",
+    instagram: "",
+    facebook: "",
+    website: "",
+    articleIdea: "",
   });
-
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+  const supportRequestMutation = trpc.support.requests.create.useMutation();
+  const captureLeadMutation = trpc.crm.contacts.capture.useMutation();
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Simulate form submission
-    console.log('Form submitted:', formData);
-    setSubmitted(true);
-    setTimeout(() => {
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        title: '',
-        bio: '',
-        expertise: '',
-        twitter: '',
-        linkedin: '',
-        website: '',
-        articleIdea: '',
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setError(null);
+
+    const message = [
+      `Contributor application from ${formData.name}.`,
+      formData.company ? `Company: ${formData.company}` : null,
+      formData.title ? `Role: ${formData.title}` : null,
+      formData.bio ? `Bio: ${formData.bio}` : null,
+      formData.expertise ? `Expertise: ${formData.expertise}` : null,
+      formData.instagram ? `Instagram: ${formData.instagram}` : null,
+      formData.facebook ? `Facebook: ${formData.facebook}` : null,
+      formData.website ? `Website: ${formData.website}` : null,
+      `Pitch: ${formData.articleIdea}`,
+    ]
+      .filter(Boolean)
+      .join("\n\n");
+
+    try {
+      await supportRequestMutation.mutateAsync({
+        name: formData.name,
+        email: formData.email,
+        topic: "Contributor application",
+        message,
+        source: "aima-blog-contribute",
+        pageUrl: typeof window !== "undefined" ? window.location.href : undefined,
+        origin: typeof window !== "undefined" ? window.location.origin : undefined,
       });
-      setSubmitted(false);
-    }, 3000);
+
+      await captureLeadMutation.mutateAsync({
+        email: formData.email,
+        name: formData.name,
+        source: "contributor-application",
+        origin: typeof window !== "undefined" ? window.location.origin : undefined,
+        path: "/contribute",
+      });
+
+      setSubmitted(true);
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        title: "",
+        bio: "",
+        expertise: "",
+        instagram: "",
+        facebook: "",
+        website: "",
+        articleIdea: "",
+      });
+    } catch (mutationError) {
+      setError(mutationError instanceof Error ? mutationError.message : "Unable to send your contributor application.");
+    }
   };
 
   return (
     <Layout>
-      {/* Header */}
-      <section className="bg-secondary border-b border-border">
+      <section className="border-b border-border bg-secondary/60">
         <div className="container py-12 md:py-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Become a Guest Author</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
-            Share your expertise with the aima community. We're looking for thoughtful, well-researched articles on AI agents, personal finance, autonomous systems, and fintech innovation.
+          <p className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-accent">
+            <Sparkles className="h-4 w-4" />
+            Contributor program
           </p>
-          <div className="accent-bar w-24 mt-8" />
+          <h1 className="mt-5 text-4xl font-bold text-foreground md:text-5xl">Write for the AIMA editorial system</h1>
+          <p className="mt-4 max-w-3xl text-lg text-muted-foreground">
+            We are building a non-coder publishing workflow for product, protocol, finance, and help-center content. If you want to contribute to the blog or support knowledge base, apply here and the editorial team can invite you into the shared CMS.
+          </p>
         </div>
       </section>
 
-      {/* Main Content */}
       <section className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          {/* Form - 2 columns */}
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-3">
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Name */}
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Full Name *</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="Your full name"
-                />
+            <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border bg-card p-8 shadow-sm">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm font-semibold text-foreground">Full name *
+                  <input type="text" name="name" value={formData.name} onChange={handleChange} required className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Your full name" />
+                </label>
+                <label className="text-sm font-semibold text-foreground">Email address *
+                  <input type="email" name="email" value={formData.email} onChange={handleChange} required className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="you@example.com" />
+                </label>
               </div>
 
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Email Address *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="your@email.com"
-                />
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="text-sm font-semibold text-foreground">Company
+                  <input type="text" name="company" value={formData.company} onChange={handleChange} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Your company" />
+                </label>
+                <label className="text-sm font-semibold text-foreground">Role / title
+                  <input type="text" name="title" value={formData.title} onChange={handleChange} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Your role" />
+                </label>
               </div>
 
-              {/* Company & Title */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Company</label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="Your company"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Title</label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="Your title"
-                  />
-                </div>
+              <label className="text-sm font-semibold text-foreground">Short bio *
+                <textarea name="bio" value={formData.bio} onChange={handleChange} required rows={4} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Tell us about yourself and the perspective you bring." />
+              </label>
+
+              <label className="text-sm font-semibold text-foreground">Areas of expertise *
+                <input type="text" name="expertise" value={formData.expertise} onChange={handleChange} required className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="AI agents, fintech, support docs, APIs, developer relations…" />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <label className="text-sm font-semibold text-foreground">Instagram
+                  <input type="text" name="instagram" value={formData.instagram} onChange={handleChange} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="@handle" />
+                </label>
+                <label className="text-sm font-semibold text-foreground">Facebook
+                  <input type="text" name="facebook" value={formData.facebook} onChange={handleChange} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Profile name or URL" />
+                </label>
+                <label className="text-sm font-semibold text-foreground">Website
+                  <input type="url" name="website" value={formData.website} onChange={handleChange} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="https://your-site.com" />
+                </label>
               </div>
 
-              {/* Bio */}
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Bio *</label>
-                <textarea
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  required
-                  rows={3}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="Tell us about yourself and your expertise (100-200 words)"
-                />
-              </div>
+              <label className="text-sm font-semibold text-foreground">Article or support-doc pitch *
+                <textarea name="articleIdea" value={formData.articleIdea} onChange={handleChange} required rows={6} className="mt-2 w-full rounded-xl border border-border bg-background px-4 py-3" placeholder="Tell us what you want to write, which product it relates to, and why readers would care." />
+              </label>
 
-              {/* Expertise */}
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Areas of Expertise *</label>
-                <input
-                  type="text"
-                  name="expertise"
-                  value={formData.expertise}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="e.g., AI Ethics, Fintech, Product Design (comma-separated)"
-                />
-              </div>
+              <button type="submit" className="w-full rounded-xl bg-accent px-6 py-3 font-semibold text-accent-foreground transition hover:bg-accent/90 disabled:opacity-60" disabled={supportRequestMutation.isPending || captureLeadMutation.isPending}>
+                {supportRequestMutation.isPending || captureLeadMutation.isPending ? "Submitting application…" : "Submit application"}
+              </button>
 
-              {/* Social Links */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Twitter</label>
-                  <input
-                    type="text"
-                    name="twitter"
-                    value={formData.twitter}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="@yourhandle"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">LinkedIn</label>
-                  <input
-                    type="text"
-                    name="linkedin"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="linkedin-profile"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">Website</label>
-                  <input
-                    type="url"
-                    name="website"
-                    value={formData.website}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                    placeholder="https://yoursite.com"
-                  />
-                </div>
-              </div>
-
-              {/* Article Idea */}
-              <div>
-                <label className="block text-sm font-semibold text-foreground mb-2">Article Idea or Pitch *</label>
-                <textarea
-                  name="articleIdea"
-                  value={formData.articleIdea}
-                  onChange={handleChange}
-                  required
-                  rows={4}
-                  className="w-full px-4 py-3 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                  placeholder="Share your article idea, topic, or pitch. What would you like to write about?"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <div>
-                <button
-                  type="submit"
-                  className="w-full px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
-                >
-                  {submitted ? '✓ Application Sent' : 'Submit Application'}
-                </button>
-              </div>
-
-              {submitted && (
-                <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
+              {submitted ? (
+                <div className="rounded-2xl border border-accent/20 bg-accent/10 p-4">
                   <div className="flex items-start gap-3">
-                    <CheckCircle className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="mt-0.5 h-5 w-5 text-accent" />
                     <div>
-                      <p className="font-semibold text-foreground">Application Received!</p>
-                      <p className="text-sm text-muted-foreground">
-                        Thanks for your interest. We'll review your application and get back to you within 5-7 business days.
-                      </p>
+                      <p className="font-semibold text-foreground">Application received</p>
+                      <p className="text-sm text-muted-foreground">We’ve sent your contributor application into the shared CMS/CRM queue so an editor can review it and invite you into the workspace.</p>
                     </div>
                   </div>
                 </div>
-              )}
+              ) : null}
+
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
             </form>
           </div>
 
-          {/* Sidebar - 1 column */}
-          <aside className="lg:col-span-1">
-            <div className="sticky top-24 space-y-8">
-              {/* Guidelines */}
-              <div className="bg-secondary rounded-lg p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-4">Article Guidelines</h3>
-                <ul className="space-y-3 text-sm text-muted-foreground">
-                  <li className="flex gap-2">
-                    <span className="text-accent font-bold">•</span>
-                    <span>1,500-3,000 words for full articles</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-accent font-bold">•</span>
-                    <span>Original, unpublished content</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-accent font-bold">•</span>
-                    <span>Focus on practical insights</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-accent font-bold">•</span>
-                    <span>Include relevant examples</span>
-                  </li>
-                  <li className="flex gap-2">
-                    <span className="text-accent font-bold">•</span>
-                    <span>Professional tone</span>
-                  </li>
-                </ul>
-              </div>
+          <aside className="space-y-6 lg:col-span-1">
+            <div className="rounded-3xl border bg-card p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-foreground">What invited contributors can do</h2>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-muted-foreground">
+                <li>Write blog posts without touching code.</li>
+                <li>Upload cover images and reuse media from a shared library.</li>
+                <li>Save drafts, revise them, and submit them for editorial review.</li>
+                <li>Contribute product education for both EVA and Universal Transaction Gateway.</li>
+              </ul>
+            </div>
 
-              {/* Topics */}
-              <div className="bg-secondary rounded-lg p-6 border border-border">
-                <h3 className="font-bold text-foreground mb-4">Popular Topics</h3>
-                <div className="space-y-2">
-                  {[
-                    'AI Agents & Automation',
-                    'Personal Finance',
-                    'Fintech Innovation',
-                    'Financial Security',
-                    'Product Design',
-                    'Autonomous Commerce',
-                  ].map((topic) => (
-                    <span key={topic} className="inline-block px-3 py-1 bg-accent/10 text-accent text-xs rounded-full mr-2 mb-2">
-                      {topic}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Contact */}
-              <div className="bg-accent/10 rounded-lg p-6 border border-accent/20">
-                <h3 className="font-bold text-foreground mb-2">Questions?</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Reach out to our editorial team directly.
-                </p>
-                <a
-                  href="mailto:help@useaima.com"
-                  className="text-accent font-semibold hover:underline"
-                >
-                  help@useaima.com
-                </a>
-              </div>
+            <div className="rounded-3xl border bg-card p-6 shadow-sm">
+              <h2 className="text-xl font-bold text-foreground">Editorial guidelines</h2>
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-muted-foreground">
+                <li>Use clear headings and write for real users, not only search engines.</li>
+                <li>Prefer helpful explanations, examples, and practical next steps.</li>
+                <li>Keep product claims accurate and grounded in what is live.</li>
+                <li>Expect editor review before anything goes public.</li>
+              </ul>
             </div>
           </aside>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="bg-secondary border-y border-border">
-        <div className="container py-12 md:py-16">
-          <h2 className="text-3xl font-bold text-foreground mb-12 text-center">Frequently Asked Questions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div>
-              <h3 className="font-bold text-foreground mb-2">Do you pay guest authors?</h3>
-              <p className="text-sm text-muted-foreground">
-                We currently offer exposure and a featured author profile. We're exploring compensation options for the future.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground mb-2">How long does review take?</h3>
-              <p className="text-sm text-muted-foreground">
-                We typically review applications within 5-7 business days and provide feedback on your pitch.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground mb-2">Can I republish elsewhere?</h3>
-              <p className="text-sm text-muted-foreground">
-                Articles should be original and exclusive to aima for 30 days after publication.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-bold text-foreground mb-2">What topics do you accept?</h3>
-              <p className="text-sm text-muted-foreground">
-                We focus on AI, finance, autonomous systems, and practical insights relevant to our audience.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
     </Layout>

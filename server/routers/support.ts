@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { adminProcedure, publicProcedure, router } from "../_core/trpc";
-import { createSupportRequest, listSupportRequests, updateSupportRequestStatus } from "../sharedBackend";
+import { publicProcedure, router, supportProcedure } from "../_core/trpc";
+import { createSupportRequest, listSupportRequests, updateSupportRequestStatus } from "../platformBackend";
 
 export const supportRouter = router({
   requests: router({
@@ -18,11 +18,11 @@ export const supportRouter = router({
       )
       .mutation(async ({ input }) => createSupportRequest(input)),
 
-    list: adminProcedure
-      .input(z.object({ limit: z.number().int().positive().max(200).optional() }))
-      .query(async ({ input }) => listSupportRequests(input.limit ?? 100)),
+    list: supportProcedure
+      .input(z.object({ limit: z.number().int().positive().max(200).optional() }).optional())
+      .query(async ({ input }) => listSupportRequests(input?.limit ?? 100)),
 
-    updateStatus: adminProcedure
+    updateStatus: supportProcedure
       .input(z.object({ id: z.string().uuid(), status: z.enum(["new", "triaged", "in_progress", "resolved", "spam"]) }))
       .mutation(async ({ input }) => updateSupportRequestStatus(input.id, input.status)),
   }),

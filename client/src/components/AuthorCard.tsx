@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Author } from '@/lib/mockData';
 import VerificationBadge from './VerificationBadge';
+import { resolveFacebookHref, resolveInstagramHref } from '@/lib/socialLinks';
 
 interface AuthorCardProps {
   author: Author;
@@ -12,18 +13,18 @@ function AuthorSocials({ author }: { author: Author }) {
     author.instagram
       ? {
           key: 'instagram',
-          href: `https://instagram.com/${author.instagram}`,
+          href: resolveInstagramHref(author.instagram),
           label: 'IG',
         }
       : null,
     author.facebook
       ? {
           key: 'facebook',
-          href: `https://facebook.com/${encodeURIComponent(author.facebook)}`,
+          href: resolveFacebookHref(author.facebook),
           label: 'FB',
         }
       : null,
-  ].filter(Boolean) as Array<{ key: string; href: string; label: string }>;
+  ].filter(Boolean) as Array<{ key: string; href: string | null; label: string }>;
 
   if (!links.length) return null;
 
@@ -32,7 +33,7 @@ function AuthorSocials({ author }: { author: Author }) {
       {links.map((link) => (
         <a
           key={link.key}
-          href={link.href}
+          href={link.href ?? '#'}
           target="_blank"
           rel="noopener noreferrer"
           onClick={(e) => e.stopPropagation()}

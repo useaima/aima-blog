@@ -1,6 +1,7 @@
 import { Link } from 'wouter';
 import { Author } from '@/lib/mockData';
 import VerificationBadge from './VerificationBadge';
+import { formatSocialLabel, resolveFacebookHref, resolveInstagramHref } from '@/lib/socialLinks';
 
 interface AuthorBioProps {
   author: Author;
@@ -12,7 +13,8 @@ export default function AuthorBio({ author }: AuthorBioProps) {
       ? {
           key: 'instagram',
           label: 'Instagram',
-          href: `https://instagram.com/${author.instagram}`,
+          href: resolveInstagramHref(author.instagram),
+          text: formatSocialLabel(author.instagram, 'instagram'),
           badge: 'IG',
         }
       : null,
@@ -20,11 +22,12 @@ export default function AuthorBio({ author }: AuthorBioProps) {
       ? {
           key: 'facebook',
           label: 'Facebook',
-          href: `https://facebook.com/${encodeURIComponent(author.facebook)}`,
+          href: resolveFacebookHref(author.facebook),
+          text: formatSocialLabel(author.facebook, 'facebook'),
           badge: 'FB',
         }
       : null,
-  ].filter(Boolean) as Array<{ key: string; label: string; href: string; badge: string }>;
+  ].filter(Boolean) as Array<{ key: string; label: string; href: string | null; text: string; badge: string }>;
 
   return (
     <div className="bg-secondary rounded-lg p-6 md:p-8 border border-border">
@@ -70,7 +73,7 @@ export default function AuthorBio({ author }: AuthorBioProps) {
           {socialLinks.map((link) => (
             <a
               key={link.key}
-              href={link.href}
+              href={link.href ?? '#'}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-accent hover:underline"
@@ -79,7 +82,7 @@ export default function AuthorBio({ author }: AuthorBioProps) {
               <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
                 {link.badge}
               </span>
-              {link.label}
+              {link.text || link.label}
             </a>
           ))}
         </div>

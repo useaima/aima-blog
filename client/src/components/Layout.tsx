@@ -1,7 +1,7 @@
 import { Link } from 'wouter';
 import { Search, Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { usePlatformData } from '@/lib/contentApi';
 import SearchBox from './SearchBox';
 
 interface LayoutProps {
@@ -11,233 +11,165 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { data: platform } = usePlatformData();
+  const settings = platform?.settings;
+  const evaUrl = settings?.evaUrl ?? 'https://eva.useaima.com';
+  const utgUrl = settings?.utgUrl ?? 'https://utg.useaima.com';
+  const supportUrl = settings?.supportUrl ?? 'https://support.useaima.com';
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-background border-b border-border">
-        <div className="container py-4 flex items-center justify-between">
-          {/* Logo */}
+      <header className="sticky top-0 z-50 border-b border-border bg-background">
+        <div className="container flex items-center justify-between py-4">
           <Link href="/">
-            <a className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <img
-                src="/logo.png"
-                alt="Aima Logo"
-                className="w-8 h-8 object-contain"
-              />
+            <a className="flex items-center gap-3 transition-opacity hover:opacity-80">
+              <img src="/logo.png" alt="Aima Logo" className="h-8 w-8 object-contain" />
               <div className="hidden sm:block">
-                <div className="text-sm font-semibold text-muted-foreground tracking-widest">AIMA</div>
-                <div className="text-xs text-muted-foreground">EDITORIAL HUB FOR EVA</div>
+                <div className="text-sm font-semibold tracking-widest text-muted-foreground">AIMA</div>
+                <div className="text-xs text-muted-foreground">EDITORIAL HUB FOR EVA + UTG</div>
               </div>
             </a>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden items-center gap-8 md:flex">
             <Link href="/">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Latest</a>
+              <a className="text-sm font-medium transition-colors hover:text-accent">Latest</a>
+            </Link>
+            <Link href="/categories">
+              <a className="text-sm font-medium transition-colors hover:text-accent">Categories</a>
             </Link>
             <Link href="/authors">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Authors</a>
-            </Link>
-            <Link href="/guest-authors">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Guest Authors</a>
-            </Link>
-            <Link href="/author-dashboard">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Dashboard</a>
+              <a className="text-sm font-medium transition-colors hover:text-accent">Authors</a>
             </Link>
             <Link href="/archive">
-              <a className="text-sm font-medium hover:text-accent transition-colors">Archive</a>
-            </Link>     </nav>
+              <a className="text-sm font-medium transition-colors hover:text-accent">Archive</a>
+            </Link>
+            <Link href="/author-dashboard">
+              <a className="text-sm font-medium transition-colors hover:text-accent">Dashboard</a>
+            </Link>
+          </nav>
 
-          {/* Right Actions */}
           <div className="flex items-center gap-4">
-            {/* Search Box */}
             <div className="hidden md:block">
               <SearchBox />
             </div>
 
-            {/* Search Button (Mobile) */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="rounded-lg p-2 transition-colors hover:bg-secondary md:hidden"
               aria-label="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="h-5 w-5" />
             </button>
 
-            {/* CTA Button */}
             <a
-              href="https://eva.useaima.com"
+              href={evaUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex px-4 py-2 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
+              className="hidden rounded-lg bg-accent px-4 py-2 font-semibold text-accent-foreground transition-colors hover:bg-accent/90 sm:inline-flex"
             >
               Open eva
             </a>
 
-            {/* Mobile Menu Toggle */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+              className="rounded-lg p-2 transition-colors hover:bg-secondary md:hidden"
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        {/* Search Bar */}
         {isSearchOpen && (
-          <div className="border-t border-border bg-secondary">
+          <div className="border-t border-border bg-secondary md:hidden">
             <div className="container py-3">
-              <input
-                type="text"
-                placeholder="Search articles..."
-                className="w-full px-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-              />
+              <SearchBox />
             </div>
           </div>
         )}
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
-          <nav className="md:hidden border-t border-border bg-secondary">
-            <div className="container py-4 flex flex-col gap-4">
+          <nav className="border-t border-border bg-secondary md:hidden">
+            <div className="container flex flex-col gap-4 py-4">
               <Link href="/">
-                <a className="text-sm font-medium hover:text-accent transition-colors">Latest</a>
-              </Link>
-              <Link href="/authors">
-                <a className="text-sm font-medium hover:text-accent transition-colors">Authors</a>
+                <a className="text-sm font-medium transition-colors hover:text-accent">Latest</a>
               </Link>
               <Link href="/categories">
-                <a className="text-sm font-medium hover:text-accent transition-colors">Categories</a>
+                <a className="text-sm font-medium transition-colors hover:text-accent">Categories</a>
+              </Link>
+              <Link href="/authors">
+                <a className="text-sm font-medium transition-colors hover:text-accent">Authors</a>
               </Link>
               <Link href="/archive">
-                <a className="text-sm font-medium hover:text-accent transition-colors">Archive</a>
+                <a className="text-sm font-medium transition-colors hover:text-accent">Archive</a>
               </Link>
               <a
-                href="https://eva.useaima.com"
+                href={evaUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full block px-4 py-2 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors text-center"
+                className="block rounded-lg bg-accent px-4 py-2 text-center font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
               >
                 Open eva
+              </a>
+              <a
+                href={utgUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block rounded-lg border border-border px-4 py-2 text-center font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+              >
+                Open UTG
               </a>
             </div>
           </nav>
         )}
       </header>
 
-      {/* Main Content */}
       <main className="flex-1">{children}</main>
 
-      {/* Footer */}
-      <footer className="bg-secondary border-t border-border mt-16">
+      <footer className="mt-16 border-t border-border bg-secondary">
         <div className="container py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* About */}
+          <div className="mb-8 grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>
-              <h3 className="font-semibold mb-4">About</h3>
+              <h3 className="mb-4 font-semibold">About</h3>
               <p className="text-sm text-muted-foreground">
-                The official aima publication for practical AI agents, personal finance systems, and product updates.
+                The official aima publication for practical AI agents, personal finance systems, protocol guides, and the infrastructure behind eva and Universal Transaction Gateway.
               </p>
             </div>
 
-            {/* Categories */}
             <div>
-              <h3 className="font-semibold mb-4">Categories</h3>
+              <h3 className="mb-4 font-semibold">Categories</h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <Link href="/category/ai-agents">
-                    <a className="text-muted-foreground hover:text-accent transition-colors">AI Agents</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/category/personal-finance">
-                    <a className="text-muted-foreground hover:text-accent transition-colors">Personal Finance</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/category/protocols">
-                    <a className="text-muted-foreground hover:text-accent transition-colors">Protocols</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/category/product-updates">
-                    <a className="text-muted-foreground hover:text-accent transition-colors">Product Updates</a>
-                  </Link>
-                </li>
+                <li><Link href="/category/ai-agents"><a className="text-muted-foreground transition-colors hover:text-accent">AI Agents</a></Link></li>
+                <li><Link href="/category/personal-finance"><a className="text-muted-foreground transition-colors hover:text-accent">Personal Finance</a></Link></li>
+                <li><Link href="/category/protocols"><a className="text-muted-foreground transition-colors hover:text-accent">Protocols</a></Link></li>
+                <li><Link href="/category/product-updates"><a className="text-muted-foreground transition-colors hover:text-accent">Product Updates</a></Link></li>
               </ul>
             </div>
 
-            {/* Resources */}
             <div>
-              <h3 className="font-semibold mb-4">Resources</h3>
+              <h3 className="mb-4 font-semibold">Products</h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="https://useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
-                    Main site
-                  </a>
-                </li>
-                <li>
-                  <a href="https://useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
-                    About aima
-                  </a>
-                </li>
-                <li>
-                  <a href="https://support.useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
-                    Support
-                  </a>
-                </li>
-                <li>
-                  <a href="/archive" className="text-muted-foreground hover:text-accent transition-colors">
-                    Archive
-                  </a>
-                </li>
+                <li><a href={evaUrl} className="text-muted-foreground transition-colors hover:text-accent">eva</a></li>
+                <li><a href={utgUrl} className="text-muted-foreground transition-colors hover:text-accent">Universal Transaction Gateway</a></li>
+                <li><a href={supportUrl} className="text-muted-foreground transition-colors hover:text-accent">Support Center</a></li>
+                <li><a href="https://useaima.com" className="text-muted-foreground transition-colors hover:text-accent">Main site</a></li>
               </ul>
             </div>
 
-            {/* Legal */}
             <div>
-              <h3 className="font-semibold mb-4">Legal</h3>
+              <h3 className="mb-4 font-semibold">Legal</h3>
               <ul className="space-y-2 text-sm">
-                <li>
-                  <a href="https://useaima.com/privacy" className="text-muted-foreground hover:text-accent transition-colors">
-                    Privacy
-                  </a>
-                </li>
-                <li>
-                  <a href="https://useaima.com/terms" className="text-muted-foreground hover:text-accent transition-colors">
-                    Terms
-                  </a>
-                </li>
-                <li>
-                  <a href="https://support.useaima.com" className="text-muted-foreground hover:text-accent transition-colors">
-                    Contact
-                  </a>
-                </li>
+                <li><a href="https://useaima.com/privacy" className="text-muted-foreground transition-colors hover:text-accent">Privacy</a></li>
+                <li><a href="https://useaima.com/terms" className="text-muted-foreground transition-colors hover:text-accent">Terms</a></li>
+                <li><a href={supportUrl} className="text-muted-foreground transition-colors hover:text-accent">Contact support</a></li>
               </ul>
             </div>
           </div>
 
-          {/* Bottom */}
-          <div className="border-t border-border pt-8 flex flex-col md:flex-row items-center justify-between text-sm text-muted-foreground">
-            <p>&copy; 2026 aima. All rights reserved.</p>
-            <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="https://instagram.com/aima.ai123" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                Instagram
-              </a>
-              <a href="https://youtube.com/@aima" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                YouTube
-              </a>
-              <a href="https://reddit.com/r/aima58" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                Reddit
-              </a>
-              <a href="https://github.com/useaima" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
-                GitHub
-              </a>
-            </div>
+          <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
+            <p>© {new Date().getFullYear()} aima. Built around eva and Universal Transaction Gateway.</p>
+            <p>blog.useaima.com</p>
           </div>
         </div>
       </footer>

@@ -1,9 +1,19 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
-import type { User } from "../../drizzle/schema";
+import type { TeamRole } from "../platformBackend";
 import { sdk } from "./sdk";
 
-export type AuthenticatedUser = User & {
-  teamRole?: "admin" | "editor" | "support";
+export type AuthenticatedUser = {
+  id: string | number;
+  openId: string;
+  email?: string | null;
+  name?: string | null;
+  role: "admin" | "user";
+  teamRole?: TeamRole;
+  avatarUrl?: string | null;
+  loginMethod?: string | null;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
+  lastSignedIn?: Date | string | null;
 };
 
 export type TrpcContext = {

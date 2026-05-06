@@ -5,7 +5,18 @@ import { ENV } from "./env";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
-import { createSupportRequest, getSiteSettings, subscribeNewsletter } from "../sharedBackend";
+import {
+  createSupportRequest,
+  getPublicBlogArticle,
+  getPublicBlogAuthor,
+  getPublicBlogIndex,
+  getPublicPlatformData,
+  getPublicSupportArticle,
+  getPublicSupportIndex,
+  getSiteSettings,
+  listProducts,
+  subscribeNewsletter,
+} from "../platformBackend";
 import { serveStatic, setupVite } from "./vite";
 
 export type AppRuntime = "development" | "production" | "serverless";
@@ -48,6 +59,17 @@ function cleanString(value: unknown, maxLength = 240) {
   return value.trim().slice(0, maxLength);
 }
 
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function handleServerError(res: any, error: unknown, fallbackMessage: string) {
+  res.status(500).json({
+    ok: false,
+    error: error instanceof Error ? error.message : fallbackMessage,
+  });
+}
+
 export async function createApp(options: CreateAppOptions = {}) {
   const runtime = resolveRuntime(options.runtime);
   const app = express();
@@ -70,8 +92,105 @@ export async function createApp(options: CreateAppOptions = {}) {
   });
 
   app.get("/api/public/settings", async (_req: any, res: any) => {
-    const settings = await getSiteSettings();
-    res.status(200).json({ ok: true, settings });
+    try {
+      const settings = await getSiteSettings();
+      res.status(200).json({ ok: true, settings });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load shared settings.");
+    }
+  });
+
+  app.get("/api/public/platform", async (_req: any, res: any) => {
+    try {
+      const platform = await getPublicPlatformData();
+      res.status(200).json({ ok: true, platform });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load platform data.");
+    }
+  });
+
+  app.get("/api/public/products", async (_req: any, res: any) => {
+    try {
+      const products = await listProducts();
+      res.status(200).json({ ok: true, products });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load products.");
+    }
+  });
+
+  app.get("/api/public/blog/index", async (_req: any, res: any) => {
+    try {
+      const index = await getPublicBlogIndex();
+      res.status(200).json({ ok: true, ...index });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load blog content.");
+    }
+  });
+
+  app.get("/api/public/blog/article", async (req: any, res: any) => {
+    const slug = cleanString(req.query?.slug, 160);
+    if (!slug) {
+      res.status(400).json({ ok: false, error: "Provide an article slug." });
+      return;
+    }
+
+    try {
+      const article = await getPublicBlogArticle(slug);
+      if (!article) {
+        res.status(404).json({ ok: false, error: "Article not found." });
+        return;
+      }
+      res.status(200).json({ ok: true, article });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load the article.");
+    }
+  });
+
+  app.get("/api/public/blog/author", async (req: any, res: any) => {
+    const slug = cleanString(req.query?.slug, 160);
+    if (!slug) {
+      res.status(400).json({ ok: false, error: "Provide an author slug." });
+      return;
+    }
+
+    try {
+      const authorPayload = await getPublicBlogAuthor(slug);
+      if (!authorPayload) {
+        res.status(404).json({ ok: false, error: "Author not found." });
+        return;
+      }
+      res.status(200).json({ ok: true, ...authorPayload });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load the author page.");
+    }
+  });
+
+  app.get("/api/public/support/index", async (_req: any, res: any) => {
+    try {
+      const index = await getPublicSupportIndex();
+      res.status(200).json({ ok: true, ...index });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load support content.");
+    }
+  });
+
+  app.get("/api/public/support/article", async (req: any, res: any) => {
+    const slug = cleanString(req.query?.slug, 160);
+    if (!slug) {
+      res.status(400).json({ ok: false, error: "Provide a support article slug." });
+      return;
+    }
+
+    try {
+      const article = await getPublicSupportArticle(slug);
+      if (!article) {
+        res.status(404).json({ ok: false, error: "Support article not found." });
+        return;
+      }
+      res.status(200).json({ ok: true, article });
+    } catch (error) {
+      handleServerError(res, error, "Unable to load the support article.");
+    }
   });
 
   app.post("/api/public/subscribe", async (req: any, res: any) => {
@@ -85,7 +204,7 @@ export async function createApp(options: CreateAppOptions = {}) {
       ? req.body.tags.filter((tag: unknown): tag is string => typeof tag === "string").slice(0, 12)
       : undefined;
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !isValidEmail(email)) {
       res.status(400).json({ ok: false, error: "Enter a valid email address." });
       return;
     }
@@ -103,10 +222,7 @@ export async function createApp(options: CreateAppOptions = {}) {
 
       res.status(200).json({ ok: true, ...result });
     } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error: error instanceof Error ? error.message : "Unable to subscribe right now.",
-      });
+      handleServerError(res, error, "Unable to subscribe right now.");
     }
   });
 
@@ -124,7 +240,7 @@ export async function createApp(options: CreateAppOptions = {}) {
       return;
     }
 
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (!email || !isValidEmail(email)) {
       res.status(400).json({ ok: false, error: "Enter a valid email address." });
       return;
     }
@@ -142,10 +258,7 @@ export async function createApp(options: CreateAppOptions = {}) {
 
       res.status(200).json({ ok: true, ...result });
     } catch (error) {
-      res.status(500).json({
-        ok: false,
-        error: error instanceof Error ? error.message : "Unable to create the support request.",
-      });
+      handleServerError(res, error, "Unable to create the support request.");
     }
   });
 

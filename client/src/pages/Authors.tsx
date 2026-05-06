@@ -1,83 +1,82 @@
 import { Link } from 'wouter';
 import Layout from '@/components/Layout';
-import { authors, getArticlesByAuthor } from '@/lib/mockData';
+import { useBlogIndex } from '@/lib/contentApi';
+import { resolveFacebookHref, resolveInstagramHref } from '@/lib/socialLinks';
 
 export default function Authors() {
+  const { data: index } = useBlogIndex();
+  const authors = index?.authors ?? [];
+
   return (
     <Layout>
-      <section className="bg-secondary border-b border-border">
+      <section className="border-b border-border bg-secondary">
         <div className="container py-12 md:py-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Meet the Authors</h1>
+          <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Meet the Authors</h1>
           <p className="text-lg text-muted-foreground">
-            The people writing the guides behind eva. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
+            The people writing the guides behind eva and UTG. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
           </p>
-          <div className="accent-bar w-24 mt-8" />
+          <div className="accent-bar mt-8 w-24" />
         </div>
       </section>
 
       <section className="container py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {authors.map((author) => {
-            const authorArticles = getArticlesByAuthor(author.id);
-            const latestArticle = authorArticles[0];
+            const latestArticle = index?.articles.find((article) => article.author.id === author.id);
+            const instagramHref = resolveInstagramHref(author.instagram);
+            const facebookHref = resolveFacebookHref(author.facebook);
 
             return (
               <Link key={author.id} href={`/author/${author.id}`}>
-                <a className="group block p-8 rounded-lg bg-secondary border border-border hover:border-accent transition-colors">
-                  <div className="w-16 h-16 rounded-full bg-accent/20 flex items-center justify-center mb-4">
+                <a className="group block rounded-lg border border-border bg-secondary p-8 transition-colors hover:border-accent">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/20">
                     <span className="text-2xl font-bold text-accent">{author.name.charAt(0)}</span>
                   </div>
 
-                  <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-accent transition-colors">
+                  <h3 className="mb-1 text-xl font-bold text-foreground transition-colors group-hover:text-accent">
                     {author.name}
                   </h3>
-                  <p className="text-sm text-accent font-semibold mb-4">{author.title}</p>
-                  <p className="text-sm text-muted-foreground mb-6 line-clamp-3">{author.bio}</p>
+                  <p className="mb-4 text-sm font-semibold text-accent">{author.title}</p>
+                  <p className="mb-6 text-sm text-muted-foreground line-clamp-3">{author.bio}</p>
 
-                  <div className="flex items-center justify-between pt-4 border-t border-border">
+                  <div className="flex items-center justify-between border-t border-border pt-4">
                     <div>
                       <p className="text-lg font-bold text-foreground">{author.articleCount}</p>
                       <p className="text-xs text-muted-foreground">Published Articles</p>
                     </div>
-                    {latestArticle && (
+                    {latestArticle ? (
                       <div className="text-right">
                         <p className="text-xs text-muted-foreground">Latest</p>
-                        <p className="text-xs font-semibold text-foreground line-clamp-1">
-                          {latestArticle.title}
-                        </p>
+                        <p className="line-clamp-1 text-xs font-semibold text-foreground">{latestArticle.title}</p>
                       </div>
-                    )}
+                    ) : null}
                   </div>
 
                   <div className="mt-4 flex items-center gap-4 text-accent">
-                    {author.instagram && (
+                    {instagramHref ? (
                       <a
-                        href={`https://instagram.com/${author.instagram}`}
+                        href={instagramHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(event) => event.stopPropagation()}
                         className="inline-flex items-center gap-2 text-sm hover:underline"
                       >
-                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
-                          IG
-                        </span>
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">IG</span>
                         Instagram
                       </a>
-                    )}
-                    {author.facebook && (
+                    ) : null}
+                    {facebookHref ? (
                       <a
-                        href={`https://facebook.com/${encodeURIComponent(author.facebook)}`}
+                        href={facebookHref}
                         target="_blank"
                         rel="noopener noreferrer"
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(event) => event.stopPropagation()}
                         className="inline-flex items-center gap-2 text-sm hover:underline"
                       >
-                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">
-                          FB
-                        </span>
+                        <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-accent/10 px-2 text-[11px] font-bold text-accent">FB</span>
                         Facebook
                       </a>
-                    )}
+                    ) : null}
                   </div>
                 </a>
               </Link>
@@ -86,18 +85,17 @@ export default function Authors() {
         </div>
       </section>
 
-      <section className="bg-secondary border-y border-border">
-        <div className="container py-12 md:py-16 text-center">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Interested in Writing?</h2>
-          <p className="text-muted-foreground mb-8 max-w-2xl mx-auto">
-            We are building the aima editorial desk around useful, product-linked writing on AI agents, autonomous finance, protocols, and practical decision systems.
+      <section className="border-y border-border bg-secondary">
+        <div className="container py-12 text-center md:py-16">
+          <h2 className="mb-4 text-3xl font-bold text-foreground">Interested in Writing?</h2>
+          <p className="mx-auto mb-8 max-w-2xl text-muted-foreground">
+            We are building the aima editorial desk around useful, product-linked writing on AI agents, autonomous finance, protocols, and agentic commerce infrastructure.
           </p>
-          <a
-            href="mailto:help@useaima.com"
-            className="inline-block px-6 py-3 bg-accent text-accent-foreground rounded-lg font-semibold hover:bg-accent/90 transition-colors"
-          >
-            Get in Touch →
-          </a>
+          <Link href="/contribute">
+            <a className="inline-block rounded-lg bg-accent px-6 py-3 font-semibold text-accent-foreground transition-colors hover:bg-accent/90">
+              Apply to contribute →
+            </a>
+          </Link>
         </div>
       </section>
     </Layout>

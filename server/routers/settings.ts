@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { adminProcedure, publicProcedure, router } from "../_core/trpc";
-import { getSiteSettings, updateSiteSettings } from "../sharedBackend";
+import { getPublicPlatformData, getSiteSettings, listProducts, updateSiteSettings } from "../platformBackend";
 
 const siteSettingsInput = z.object({
   brandName: z.string().optional(),
@@ -9,6 +9,8 @@ const siteSettingsInput = z.object({
   blogUrl: z.string().url().optional(),
   supportUrl: z.string().url().optional(),
   evaUrl: z.string().url().optional(),
+  utgUrl: z.string().url().optional(),
+  utgRepoUrl: z.string().url().optional(),
   supportEmail: z.string().email().optional(),
   instagramUrl: z.string().url().optional(),
   youtubeUrl: z.string().url().optional(),
@@ -27,5 +29,11 @@ export const settingsRouter = router({
     update: adminProcedure
       .input(siteSettingsInput)
       .mutation(async ({ input, ctx }) => updateSiteSettings(input, ctx.user?.email ?? null)),
+  }),
+  products: router({
+    list: publicProcedure.query(async () => listProducts()),
+  }),
+  platform: router({
+    get: publicProcedure.query(async () => getPublicPlatformData()),
   }),
 });
