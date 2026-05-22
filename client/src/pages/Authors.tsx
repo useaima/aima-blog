@@ -13,7 +13,7 @@ export default function Authors() {
         <div className="container py-12 md:py-16">
           <h1 className="mb-4 text-4xl font-bold text-foreground md:text-5xl">Meet the Authors</h1>
           <p className="text-lg text-muted-foreground">
-            The people writing the guides behind eva and UTG. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
+            The people writing the guides behind eva and Orbis. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
           </p>
           <div className="accent-bar mt-8 w-24" />
         </div>

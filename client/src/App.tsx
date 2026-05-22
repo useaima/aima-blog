@@ -37,6 +37,7 @@ function Router() {
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/newsletter"} component={Newsletter} />
       <Route path={"/404"} component={NotFound} />
+      <Route path={"/:slug"} component={Article} />
       <Route component={NotFound} />
     </Switch>
   );

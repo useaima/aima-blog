@@ -94,9 +94,9 @@ const fallbackPlatform: PublicPlatformData = {
     instagramHandle: "@aima.ai123",
     youtubeLabel: "aima",
     companyDescription:
-      "aima builds live AI products for financial clarity and agentic commerce, including eva and Universal Transaction Gateway.",
+      "aima builds live AI products for financial clarity and agentic commerce, including eva and Orbis.",
     supportBlurb:
-      "Use the official help center for EVA and Universal Transaction Gateway documentation, troubleshooting, and direct support.",
+      "Use the official help center for EVA and Orbis documentation, troubleshooting, and direct support.",
     canonicalMainDomain: "https://useaima.com",
     canonicalBlogDomain: "https://blog.useaima.com",
     canonicalSupportDomain: "https://support.useaima.com",
@@ -116,17 +116,17 @@ const fallbackPlatform: PublicPlatformData = {
     },
     {
       slug: "utg",
-      name: "Universal Transaction Gateway",
+      name: "Orbis",
       status: "live",
       summary: "Non-custodial transaction gateway for AI agents with strict human approval, idempotency, and auditability.",
       description:
-        "UTG is AIMA's programmable settlement layer for AI agents. It creates a hard security boundary between an agent's intent and the user's money.",
+        "Orbis is AIMA's programmable settlement layer for AI agents. It creates a hard security boundary between an agent's intent and the user's money.",
       primaryUrl: "https://utg.useaima.com",
-      primaryLabel: "Open UTG",
+      primaryLabel: "Open Orbis",
       secondaryUrl: "https://github.com/useaima/universal-gateway",
       secondaryLabel: "View on GitHub",
       githubUrl: "https://github.com/useaima/universal-gateway",
-      supportLabel: "UTG Help Center",
+      supportLabel: "Orbis Help Center",
       categoryLabel: "Agentic Commerce Infrastructure",
     },
   ],

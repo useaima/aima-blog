@@ -15,7 +15,7 @@ export default function GuestAuthors() {
         <div className="container py-12 md:py-16">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">Guest Contributors</h1>
           <p className="text-lg text-muted-foreground max-w-2xl">
-            Our contributor program brings diverse perspectives to the aima editorial desk. Writers can submit drafts, upload imagery, and work with editors on practical pieces about eva, UTG, AI agents, finance, and agentic commerce.
+            Our contributor program brings diverse perspectives to the aima editorial desk. Writers can submit drafts, upload imagery, and work with editors on practical pieces about eva, Orbis, AI agents, finance, and agentic commerce.
           </p>
           <div className="accent-bar w-24 mt-8" />
         </div>

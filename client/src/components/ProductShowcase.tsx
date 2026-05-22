@@ -39,7 +39,7 @@ export default function ProductShowcase() {
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.24em] text-accent">Live products</p>
           <h2 className="text-3xl font-bold text-foreground md:text-4xl">AIMA is now building across finance guidance and transaction infrastructure.</h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            eva helps people understand money activity. UTG helps AI agents interact with financial systems safely. The blog is where both product stories are explained in detail.
+            eva helps people understand money activity. Orbis helps AI agents interact with financial systems safely. The blog is where both product stories are explained in detail.
           </p>
         </div>
 

@@ -88,8 +88,9 @@ function parseContentBlocks(content: string): ContentBlock[] {
 }
 
 export default function Article() {
-  const [, params] = useRoute('/article/:slug');
-  const slug = params?.slug as string | undefined;
+  const [, articleParams] = useRoute('/article/:slug');
+  const [, directParams] = useRoute('/:slug');
+  const slug = (articleParams?.slug ?? directParams?.slug) as string | undefined;
   const { data: article, isLoading } = useBlogArticle(slug);
   const { data: index } = useBlogIndex();
   const { data: platform } = usePlatformData();
