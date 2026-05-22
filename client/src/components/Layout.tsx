@@ -162,6 +162,7 @@ export default function Layout({ children }: LayoutProps) {
               <ul className="space-y-2 text-sm">
                 <li><a href="https://useaima.com/privacy-policy" className="text-muted-foreground transition-colors hover:text-accent">Privacy</a></li>
                 <li><a href="https://useaima.com/cookie-policy" className="text-muted-foreground transition-colors hover:text-accent">Cookies</a></li>
+                <li><a href="#" className="termly-display-preferences text-muted-foreground transition-colors hover:text-accent">Consent Preferences</a></li>
                 <li><a href="https://useaima.com/terms-of-service" className="text-muted-foreground transition-colors hover:text-accent">Terms</a></li>
                 <li><a href={supportUrl} className="text-muted-foreground transition-colors hover:text-accent">Contact support</a></li>
               </ul>
