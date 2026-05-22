@@ -24,12 +24,12 @@ export default function Home() {
       <section className="border-b border-border bg-secondary">
         <div className="container py-12 md:py-16">
           <div className="max-w-4xl">
-            <div className="featured-label mb-4">Official Editorial Hub for EVA + UTG</div>
+            <div className="featured-label mb-4">Official Editorial Hub for EVA + ORBIS</div>
             <h1 className="mb-6 text-5xl font-bold leading-tight text-foreground md:text-6xl">
               The aima newsroom for financial AI and agentic transaction infrastructure.
             </h1>
             <p className="mb-8 text-lg text-muted-foreground">
-              blog.useaima.com is the official aima publication for practical AI agents, personal finance systems, protocol guides, product updates, and the operating model behind eva and Universal Transaction Gateway.
+              blog.useaima.com is the official aima publication for practical AI agents, personal finance systems, protocol guides, product updates, and the operating model behind eva and Orbis.
             </p>
             <div className="accent-bar mb-8 w-24" />
           </div>
@@ -81,7 +81,7 @@ export default function Home() {
                 <strong className="text-foreground">Clear authorship</strong> — Readers can see who wrote the article, what they focus on, and the body of work they own.
               </p>
               <p>
-                <strong className="text-foreground">A stronger next step</strong> — Every guide can lead into eva, UTG, or the support center depending on the reader’s intent.
+                <strong className="text-foreground">A stronger next step</strong> — Every guide can lead into eva, Orbis, or the support center depending on the reader’s intent.
               </p>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -99,7 +99,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="inline-block rounded-lg border border-border px-6 py-3 font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
               >
-                Open UTG →
+                Open Orbis →
               </a>
             </div>
           </div>
@@ -108,7 +108,7 @@ export default function Home() {
             <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-accent">Editorial utility</p>
             <h3 className="mb-4 text-2xl font-bold text-foreground">Readers should leave with clarity, not just inspiration.</h3>
             <p className="text-muted-foreground">
-              This hub is built to explain how AIMA’s products behave in the real world: how eva helps people review money better, how UTG creates safer transaction rails for agents, and what those systems look like in practice.
+              This hub is built to explain how AIMA’s products behave in the real world: how eva helps people review money better, how Orbis creates safer transaction rails for agents, and what those systems look like in practice.
             </p>
           </div>
         </div>
@@ -143,7 +143,7 @@ export default function Home() {
         <div className="mb-12">
           <h2 className="mb-4 text-3xl font-bold text-foreground">Meet the Authors</h2>
           <p className="text-muted-foreground">
-            The people writing the guides behind eva and Universal Transaction Gateway. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
+            The people writing the guides behind eva and Orbis. Every article is linked to a real author page so readers can see who wrote it, what they focus on, and the body of work they have published for aima.
           </p>
         </div>
 

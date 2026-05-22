@@ -26,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
               <img src="/logo.png" alt="Aima Logo" className="h-8 w-8 object-contain" />
               <div className="hidden sm:block">
                 <div className="text-sm font-semibold tracking-widest text-muted-foreground">AIMA</div>
-                <div className="text-xs text-muted-foreground">EDITORIAL HUB FOR EVA + UTG</div>
+                <div className="text-xs text-muted-foreground">EDITORIAL HUB FOR EVA + ORBIS</div>
               </div>
             </a>
           </Link>
@@ -118,7 +118,7 @@ export default function Layout({ children }: LayoutProps) {
                 rel="noopener noreferrer"
                 className="block rounded-lg border border-border px-4 py-2 text-center font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
               >
-                Open UTG
+                Open Orbis
               </a>
             </div>
           </nav>
@@ -133,7 +133,7 @@ export default function Layout({ children }: LayoutProps) {
             <div>
               <h3 className="mb-4 font-semibold">About</h3>
               <p className="text-sm text-muted-foreground">
-                The official aima publication for practical AI agents, personal finance systems, protocol guides, and the infrastructure behind eva and Universal Transaction Gateway.
+                The official aima publication for practical AI agents, personal finance systems, protocol guides, and the infrastructure behind eva and Orbis.
               </p>
             </div>
 
@@ -151,7 +151,7 @@ export default function Layout({ children }: LayoutProps) {
               <h3 className="mb-4 font-semibold">Products</h3>
               <ul className="space-y-2 text-sm">
                 <li><a href={evaUrl} className="text-muted-foreground transition-colors hover:text-accent">eva</a></li>
-                <li><a href={utgUrl} className="text-muted-foreground transition-colors hover:text-accent">Universal Transaction Gateway</a></li>
+                <li><a href={utgUrl} className="text-muted-foreground transition-colors hover:text-accent">Orbis</a></li>
                 <li><a href={supportUrl} className="text-muted-foreground transition-colors hover:text-accent">Support Center</a></li>
                 <li><a href="https://useaima.com" className="text-muted-foreground transition-colors hover:text-accent">Main site</a></li>
               </ul>
@@ -160,15 +160,16 @@ export default function Layout({ children }: LayoutProps) {
             <div>
               <h3 className="mb-4 font-semibold">Legal</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="https://useaima.com/privacy" className="text-muted-foreground transition-colors hover:text-accent">Privacy</a></li>
-                <li><a href="https://useaima.com/terms" className="text-muted-foreground transition-colors hover:text-accent">Terms</a></li>
+                <li><a href="https://useaima.com/privacy-policy" className="text-muted-foreground transition-colors hover:text-accent">Privacy</a></li>
+                <li><a href="https://useaima.com/cookie-policy" className="text-muted-foreground transition-colors hover:text-accent">Cookies</a></li>
+                <li><a href="https://useaima.com/terms-of-service" className="text-muted-foreground transition-colors hover:text-accent">Terms</a></li>
                 <li><a href={supportUrl} className="text-muted-foreground transition-colors hover:text-accent">Contact support</a></li>
               </ul>
             </div>
           </div>
 
           <div className="flex flex-col gap-3 border-t border-border pt-6 text-sm text-muted-foreground md:flex-row md:items-center md:justify-between">
-            <p>© {new Date().getFullYear()} aima. Built around eva and Universal Transaction Gateway.</p>
+            <p>© {new Date().getFullYear()} aima. Built around eva and Orbis.</p>
             <p>blog.useaima.com</p>
           </div>
         </div>
